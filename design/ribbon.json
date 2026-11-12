@@ -1,5 +1,5 @@
 {
-  "$comment": "Aura ribbon (Tabbed Compact). 'hide' tidies buttons off the Home tab strip only; build_ribbon.py fails unless every command of the stock ribbon is still in the new ribbon (another tab or a tab's drop-down menu). 'labels' keys are the translation context of a label (text after '|').",
+  "$comment": "Aura ribbon (Tabbed Compact). 'labels' are per-language corrections of stock labels, keyed by the label's translation context (text after '|'). 'hide' tidies buttons off the Home tab. 'split' moves sections of a crowded tab into a new themed tab (inserted right after it) so every tool shows without the overflow chevron; its 'label' is a [msgctxt, msgid] pair that already exists in LibreOffice's catalog for the module, so the tab is translated in every UI language. 'drop' removes duplicate sections. build_ribbon.py fails unless every command of the stock ribbon is still in the new ribbon. 'fix' replaces commands that are dead in the stock ribbon by the working equivalent (verified by tools/test_commands.py).",
   "modules": {
     "swriter": {
       "home": "HomeLabel",
@@ -17,13 +17,91 @@
         ".uno:InsertGraphic",
         ".uno:InsertPagebreak",
         ".uno:CharmapControl"
+      ],
+      "split": [
+        {
+          "from": "InsertLabel",
+          "id": "AuraShapesLabel",
+          "sections": [
+            "DrawTexSection",
+            "DrawTexSection1",
+            "DrawSection1",
+            "DrawSection2",
+            "DrawSection3"
+          ],
+          "label": [
+            "notebookbar_groups|shapesb",
+            "Shapes"
+          ]
+        },
+        {
+          "from": "LayoutLabel",
+          "id": "AuraParagraphLabel",
+          "sections": [
+            "Layout-Section-LeftParaMargin",
+            "Layout-Section-RightParaMargin",
+            "Layout-Section-AboveSpacing",
+            "Layout-Section-BelowSpacing"
+          ],
+          "label": [
+            "paradialog|ParagraphPropertiesDialog",
+            "Paragraph"
+          ]
+        },
+        {
+          "from": "LayoutLabel",
+          "id": "AuraArrangeLabel",
+          "sections": [
+            "Layout-Section-SelectGroup",
+            "Layout-Section-SelectGroup1",
+            "Layout-Section-ObjectAlign",
+            "Layout-Section-Forward",
+            "Layout-Section-Backward"
+          ],
+          "label": [
+            "notebookbar_groupedbar_compact|ArrangeButton",
+            "_Arrange"
+          ]
+        },
+        {
+          "from": "ReferencesLabel",
+          "id": "AuraBibliographyLabel",
+          "sections": [
+            "References-Section-Bibliothek",
+            "References-Section-Bibliothek1",
+            "References-Section-Database",
+            "References-Section-Database1"
+          ],
+          "label": [
+            "STR_TOX_AUTH",
+            "Bibliography"
+          ]
+        },
+        {
+          "from": "ReviewLabel",
+          "id": "AuraTrackLabel",
+          "sections": [
+            "Review-Section-Review1",
+            "Review-Section-Review2",
+            "Review-Section-Review3",
+            "Review-Section-Review4",
+            "Review-Section-AcceptTrackedChanges",
+            "Review-Section-Compare",
+            "Review-Section-Compare1",
+            "Review-Section-Compare2"
+          ],
+          "label": [
+            "STR_HIDDEN_CHANGES",
+            "Track Changes"
+          ]
+        }
       ]
     },
     "scalc": {
       "home": "HomeLabel",
       "labels": {
         "fr": {
-          "HomeLabel": "~Accueil",
+          "CalcLabel": "~Accueil",
           "ExtensionLabel": "E~xtensions"
         }
       },
@@ -31,7 +109,79 @@
         ".uno:SubScript",
         ".uno:SuperScript",
         ".uno:InsertCell"
-      ]
+      ],
+      "split": [
+        {
+          "from": "HomeLabel",
+          "id": "AuraCellsLabel",
+          "sections": [
+            "Home-Section-Row",
+            "Home-Section-Column",
+            "Home-Section-MergeCells",
+            "Home-Section-InsertCellDialog",
+            "Home-Section-NumberFormat",
+            "Home-Section-NumberFormat1",
+            "Home-Section-Conditional",
+            "Home-Section-StyleDropdown",
+            "Home-Section-StyleParagraph",
+            "Home-Section-StyleParagraph1"
+          ],
+          "label": [
+            "notebookbar_groupedbar_full|cellb",
+            "_Cells"
+          ]
+        },
+        {
+          "from": "InsertLabel",
+          "id": "AuraShapesLabel",
+          "sections": [
+            "DrawTexSection",
+            "DrawSection1",
+            "DrawSection2",
+            "DrawSection3"
+          ],
+          "label": [
+            "notebookbar_groups|shapesb",
+            "Shapes"
+          ]
+        },
+        {
+          "from": "ReviewLabel",
+          "id": "AuraTrackLabel",
+          "sections": [
+            "Review-Section-TrackChanges",
+            "Review-Section-TrackChanges1",
+            "Review-Section-Compare",
+            "Review-Section-Compare1",
+            "Review-Section-Compare2"
+          ],
+          "label": [
+            "conflictsdialog|changes-atkobject",
+            "Changes"
+          ]
+        },
+        {
+          "from": "ViewLabel",
+          "id": "AuraWindowLabel",
+          "sections": [
+            "View-Section-Freeze",
+            "View-Section-Freeze1",
+            "View-Section-Bars",
+            "View-Section-Bars1",
+            "View-Section-NewWindow"
+          ],
+          "label": [
+            "tpviewpage|label5",
+            "Window"
+          ]
+        }
+      ],
+      "fix": {
+        ".uno:InsertQrCodeD": ".uno:InsertQrCode",
+        ".uno:DeleteComment": ".uno:DeleteNote",
+        ".uno:SpellingAndGrammarDialog": ".uno:SpellDialog",
+        ".uno:InsertPivotTableNBLabel": ".uno:DataDataPilotRun"
+      }
     },
     "simpress": {
       "home": "HomeLabel",
@@ -56,6 +206,51 @@
         ".uno:InsertObjectChart",
         ".uno:InsertTable",
         ".uno:InsertGraphic"
+      ],
+      "split": [
+        {
+          "from": "InsertLabel",
+          "id": "AuraShapesLabel",
+          "sections": [
+            "Insert-Section-DrawText",
+            "Insert-Section-LineToolbox",
+            "Insert-Section-BasicShapes",
+            "Insert-Section-FlowChartShapes",
+            "Insert-Section-FlowChartShapes1"
+          ],
+          "label": [
+            "notebookbar_groups|shapesb",
+            "Shapes"
+          ]
+        },
+        {
+          "from": "LayoutLabel",
+          "id": "AuraArrangeLabel",
+          "sections": [
+            "Layout-Section-SelectGroup",
+            "Layout-Section-SelectGroup1",
+            "Layout-Section-ToggleObjectRotateMode",
+            "Layout-Section-ObjectAlign",
+            "Layout-Section-ObjectPosition"
+          ],
+          "label": [
+            "notebookbar_groupedbar_compact|ArrangeButton",
+            "_Arrange"
+          ]
+        },
+        {
+          "from": "ViewLabel",
+          "id": "AuraMastersLabel",
+          "sections": [
+            "View-Sections-Master",
+            "View-Sections-Master1",
+            "View-Sections-Master2"
+          ],
+          "label": [
+            "STR_LEFT_PANE_IMPRESS_TITLE_MASTER",
+            "Master Slides"
+          ]
+        }
       ]
     },
     "sdraw": {
@@ -73,6 +268,34 @@
         ".uno:HelplinesUse",
         ".uno:InsertGraphic",
         ".uno:InsertTable"
+      ],
+      "split": [
+        {
+          "from": "HomeLabel",
+          "id": "AuraShapesLabel",
+          "sections": [
+            "Home-Section-TextBox",
+            "Home-Section-Line",
+            "Home-Section-Line6",
+            "Home-Section-LineToolbox",
+            "Home-Section-BasicShapes",
+            "Home-Section-FlowChartShapes",
+            "Home-Section-FlowChartShapes1"
+          ],
+          "label": [
+            "notebookbar_groups|shapesb",
+            "Shapes"
+          ]
+        },
+        {
+          "from": "InsertLabel",
+          "drop": [
+            "Insert-Section-LineToolbox",
+            "Insert-Section-BasicShapes",
+            "Insert-Section-FlowChartShapes",
+            "Insert-Section-FlowChartShapes1"
+          ]
+        }
       ]
     }
   }

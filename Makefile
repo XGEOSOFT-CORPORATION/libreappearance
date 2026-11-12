@@ -2,6 +2,7 @@
 PYTHON     ?= python3
 UNO_PYTHON ?= /usr/bin/python3
 LO_CONFIG  ?= /usr/lib/libreoffice/share/config
+INTER_DIR  ?= /usr/share/fonts/opentype/inter
 STAGE      := build/oxt
 
 .PHONY: all assets icons registry templates samples gtk ribbon oxt install uninstall clean test
@@ -29,7 +30,7 @@ ribbon:
 assets: icons registry samples gtk ribbon
 
 oxt: assets
-	$(PYTHON) tools/build_oxt.py
+	$(PYTHON) tools/build_oxt.py --fonts $(INTER_DIR)
 
 install: oxt
 	unopkg add --force dist/Aura-*.oxt
@@ -41,4 +42,6 @@ clean:
 	rm -rf build dist
 
 test: oxt
+	$(PYTHON) tools/test_table_html.py
 	$(UNO_PYTHON) tools/test_extension.py
+	$(UNO_PYTHON) tools/test_commands.py

@@ -6,11 +6,18 @@ from pathlib import Path
 
 from tokens import ROOT, load_tokens
 
+# Inter (SIL Open Font License): the faces the Aura templates and UI use
+FONT_FILES = ("Inter-Regular", "Inter-Italic", "Inter-SemiBold", "Inter-SemiBoldItalic",
+              "Inter-Bold", "Inter-BoldItalic", "InterDisplay-SemiBold", "InterDisplay-Bold")
+
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", default=str(ROOT / "build" / "oxt"))
     ap.add_argument("--dist", default=str(ROOT / "dist"))
+    ap.add_argument("--fonts", default="/usr/share/fonts/opentype/inter",
+                    help="directory holding Inter's static .otf files")
+    ap.add_argument("--fonts-license", default="/usr/share/doc/fonts-inter/copyright")
     args = ap.parse_args()
 
     version = load_tokens()["version"]
@@ -21,9 +28,16 @@ def main():
     desc.write_text(desc.read_text(encoding="utf-8").replace("@VERSION@", version), encoding="utf-8")
     shutil.copy(ROOT / "LICENSE", stage / "LICENSE")
 
+    fonts = stage / "fonts"
+    fonts.mkdir(exist_ok=True)
+    for name in FONT_FILES:
+        shutil.copy(Path(args.fonts) / f"{name}.otf", fonts / f"{name}.otf")
+    shutil.copy(args.fonts_license, fonts / "LICENSE-Inter.txt")
+
     for required in ("iconsets/images_aura_svg.zip", "registry/ColorSchemes.xcu",
                      "templates/Aura/aura-document.ott", "gtk/Aura/gtk-3.0/gtk.css",
-                     "ui/fr/swriter/ui/notebookbar_compact.ui"):
+                     "ui/swriter/ui/notebookbar_compact.ui", "ui/overrides.json",
+                     "python/pythonpath/aura_ribbon.py", "fonts/Inter-Regular.otf"):
         if not (stage / required).exists():
             raise SystemExit(f"missing generated asset: {required} (run `make assets`)")
 

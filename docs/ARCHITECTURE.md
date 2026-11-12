@@ -7,17 +7,26 @@ tools/
   build_icons.py            Colibre SVG (installé avec LibreOffice) -> images_aura[_dark]_svg.zip
   build_registry.py         tokens -> registry/ColorSchemes.xcu
   build_gtk.py              tokens.chrome + src/gtk/aura.css -> gtk/Aura, gtk/Aura-dark (GTK 3)
-  build_ribbon.py           notebookbar_compact.ui installé + design/ribbon.json -> ui/<lang>/<module>/
-                            (échoue si une commande du ruban d'origine disparaît du ruban)
+  build_ribbon.py           notebookbar_compact.ui installé + design/ribbon.json -> ui/<module>/
+                            (onglets scindés par thème, commandes mortes corrigées ; échoue si
+                            une commande du ruban d'origine disparaît du ruban)
   build_templates.py        pilote un LibreOffice headless (profil jetable) via UNO
                             -> templates/Aura/*.ott|ots|otp (+ exemples et PDF)
   build_oxt.py              src/extension + assets générés -> dist/Aura-<version>.oxt
   test_extension.py         installe l'oxt dans un profil jetable et vérifie le tout
+  test_commands.py          chaque commande des rubans exécutable dans son module (comparé au
+                            ruban d'origine : aucune régression, toute commande ajoutée passe)
+  test_table_html.py        analyse du HTML d'Excel (classes CSS, bordures en pt, fusions)
 src/extension/              fichiers statiques de l'extension
   description.xml           identifiant org.libreappearance.aura, LibreOffice >= 24.2
   Paths.xcu                 ajoute %origin%/iconsets et %origin%/templates aux chemins
   registry/Addons.xcu       menu Outils ▸ Aura
-  python/aura.py            composant UNO (XJobExecutor) : appliquer / restaurer
+  registry/Jobs.xcu         job de démarrage : régénère les rubans (langue, extensions)
+  registry/Accelerators.xcu Ctrl+V dans Writer -> collage de tableau fidèle
+  python/aura.py            composant UNO (XJobExecutor, XJob) : appliquer / restaurer / actualiser,
+                            collage de tableau, polices
+  python/pythonpath/        aura_ribbon.py (rubans, onglet Extensions, langue),
+                            aura_table.py (tableaux : Calc/HTML -> Writer/Impress)
 ```
 
 ## Ce que l'extension peut — et ne peut pas — changer en 24.2
@@ -71,3 +80,37 @@ Chaque couleur des SVG Colibre est remplacée : d'abord via les `overrides` expl
 tokens (les ~20 couleurs qui couvrent l'essentiel), sinon par la teinte de la rampe Aura de
 même famille (ardoise, indigo, ciel, violet, rose, ambre, émeraude) la plus proche en
 luminosité. Les formes ne changent pas, donc la couverture reste complète.
+
+## Langue de l'interface
+
+Les onglets créés par Aura portent un couple `[msgctxt, msgid]` qui existe déjà dans le catalogue
+de LibreOffice pour le module (`sw`, `sc`, `sd`). À l'application, `aura_ribbon.localize` lit le
+catalogue de la langue d'interface active (`$(prog)/resource/<langue>/LC_MESSAGES/*.mo`) et écrit
+le libellé traduit. Les corrections propres à une langue (en français « Origine » -> « Accueil »)
+sont dans `ribbon.json` (`labels`). Le job de démarrage compare langue, extensions et version à
+l'état enregistré dans `files.json` et régénère les rubans s'ils ont changé.
+
+## Onglet Extensions
+
+Aura lit `AddonUI` (`OfficeNotebookBar`, `OfficeToolBar`, `OfficeToolbarMerging`), regroupe les
+commandes par extension (le nom vient des fichiers `.xcu` que chaque extension installée déclare),
+filtre par module, puis écrit un groupe titré par extension : boutons texte directs, ou menu
+« Nom ▾ » pour les groupes les plus larges quand tout ne tient pas dans la largeur de la fenêtre.
+Les menus d'extensions restent accessibles par le bouton « Extension ▾ » de LibreOffice.
+
+## Collage de tableaux
+
+Depuis Calc, le presse-papiers contient le classeur de la plage copiée, mais avec les définitions
+**par défaut** des styles de cellule intégrés (défaut de LibreOffice) : Aura retrouve donc la
+sélection d'origine dans le document ouvert (même contenu) et la lit directement ; à défaut, il
+utilise le classeur du presse-papiers. Depuis Excel ou le web, il analyse le HTML et son CSS.
+Le tableau est recréé nativement (`TextTable` dans Writer, `TableShape` dans Impress/Draw), dans
+un seul pas d'annulation.
+
+## Windows et macOS
+
+Tout passe par la configuration et le Python fourni avec LibreOffice ; seuls le thème GTK et les
+lanceurs sont propres à Linux. Le mode clair/sombre des fenêtres utilise
+`Common/Misc/Appearance`. Inter est installée dans les polices de l'utilisateur
+(`%LOCALAPPDATA%\Microsoft\Windows\Fonts` + registre HKCU, `~/Library/Fonts`,
+`~/.local/share/fonts`) seulement si elle manque, et retirée par Restaurer.

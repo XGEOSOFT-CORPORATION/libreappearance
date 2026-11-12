@@ -5,6 +5,7 @@ icon themes, colour schemes and templates are registered, then runs
 Apply (light) and Restore through the Aura service and compares settings.
 """
 import glob
+import json
 import os
 import shutil
 import subprocess
@@ -73,6 +74,28 @@ def main():
 
         ribbon = profile / "user/config/soffice.cfg/modules/swriter/ui/notebookbar_compact.ui"
         check("apply: Aura ribbon placed in profile", ribbon.exists())
+        xml = ribbon.read_text(encoding="utf-8") if ribbon.exists() else ""
+        check("apply: Extensions tab has Manage and Aura groups",
+              "PackageManagerDialog" in xml and "org.libreappearance.aura.Aura?apply_dark" in xml
+              and "NotebookBarAddonsToolMergePoint" not in xml)
+        check("apply: Aura tab labels localised (no msgid left)",
+              'context="STR_TOX_AUTH"' not in xml and ">_Arrange<" not in xml)
+        for path, name, value in (("/org.openoffice.Office.Common/Misc", "ShowTipOfTheDay", False),
+                                  ("/org.openoffice.Office.Common/Cache/GraphicManager",
+                                   "GraphicMemoryLimit", 600000000)):
+            got = cfg(path).getPropertyValue(name)
+            check(f"apply: light profile {name}", got == value, got)
+        check("apply: native light mode (Windows/macOS windows)",
+              cfg("/org.openoffice.Office.Common/Misc").getPropertyValue("Appearance") == 1)
+        check("apply: Ctrl+V in Writer routed to the faithful table paste",
+              "smart_paste" in str(cfg("/org.openoffice.Office.Accelerators/PrimaryKeys/Modules/"
+                                       "com.sun.star.text.TextDocument/V_MOD1").getPropertyValue("Command")))
+        manifest = json.loads((profile / "user/libreappearance/files.json").read_text())
+        manifest.pop("ribbon_state", None)
+        (profile / "user/libreappearance/files.json").write_text(json.dumps(manifest))
+        aura.execute(())
+        check("start-up job regenerates a stale ribbon",
+              "ribbon_state" in json.loads((profile / "user/libreappearance/files.json").read_text()))
         check("apply: GTK themes installed", (data_home / "themes/Aura/gtk-3.0/gtk.css").exists()
               and (data_home / "themes/Aura-dark/gtk-3.0/gtk.css").exists())
         launcher = data_home / "applications/libreoffice-writer.desktop"
@@ -81,11 +104,17 @@ def main():
 
         aura.trigger("apply_dark")
         check("apply dark: icon theme", snapshot()[0] == "aura_dark_svg")
+        check("apply dark: native dark mode",
+              cfg("/org.openoffice.Office.Common/Misc").getPropertyValue("Appearance") == 2)
         text = launcher.read_text()
         check("apply dark: launcher switches to Aura-dark",
               "GTK_THEME=Aura-dark " in text and "GTK_THEME=Aura GTK_THEME" not in text)
         aura.trigger("restore")
         check("restore: settings back to original", snapshot() == before, (before, snapshot()))
+        check("restore: native appearance reverted",
+              cfg("/org.openoffice.Office.Common/Misc").getPropertyValue("Appearance") == 0)
+        check("restore: light profile reverted",
+              cfg("/org.openoffice.Office.Common/Misc").getPropertyValue("ShowTipOfTheDay") is True)
         check("restore: ribbon, themes and launchers removed",
               not ribbon.exists() and not (data_home / "themes/Aura").exists() and not launcher.exists())
     finally:

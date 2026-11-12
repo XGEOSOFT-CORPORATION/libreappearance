@@ -102,6 +102,8 @@ class Office:
 
 def store(doc, path, flt):
     path.parent.mkdir(parents=True, exist_ok=True)
+    # build outputs only: a lock left by a viewer that crashed must not block the build
+    (path.parent / f".~lock.{path.name}#").unlink(missing_ok=True)
     doc.storeToURL(path.resolve().as_uri(), props(FilterName=flt, Overwrite=True))
     print(f"  {path}")
 

@@ -22,30 +22,72 @@
                 <value xml:lang="fr">Aura</value>
               </prop>
               <node oor:name="Submenu">
-                <node oor:name="M1" oor:op="replace">
+                <node oor:name="m01" oor:op="replace">
+                  <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?paste_table</value></prop>
+                  <prop oor:name="Title">
+                    <value xml:lang="en-US">Paste table with its formatting</value>
+                    <value xml:lang="fr">Coller le tableau avec sa mise en forme</value>
+                    <value xml:lang="de">Tabelle mit Formatierung einfügen</value>
+                    <value xml:lang="es">Pegar tabla con su formato</value>
+                    <value xml:lang="it">Incolla tabella con la formattazione</value>
+                    <value xml:lang="pt">Colar tabela com a formatação</value>
+                  </prop>
+                  <prop oor:name="Target"><value>_self</value></prop>
+                </node>
+                <node oor:name="m02" oor:op="replace">
+                  <prop oor:name="URL"><value>private:separator</value></prop>
+                </node>
+                <node oor:name="m03" oor:op="replace">
                   <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?apply_light</value></prop>
                   <prop oor:name="Title">
                     <value xml:lang="en-US">Apply Aura (light)</value>
                     <value xml:lang="fr">Appliquer Aura (clair)</value>
+                    <value xml:lang="de">Aura anwenden (hell)</value>
+                    <value xml:lang="es">Aplicar Aura (claro)</value>
+                    <value xml:lang="it">Applica Aura (chiaro)</value>
+                    <value xml:lang="pt">Aplicar Aura (claro)</value>
                   </prop>
                   <prop oor:name="Target"><value>_self</value></prop>
                 </node>
-                <node oor:name="M2" oor:op="replace">
+                <node oor:name="m04" oor:op="replace">
                   <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?apply_dark</value></prop>
                   <prop oor:name="Title">
                     <value xml:lang="en-US">Apply Aura (dark)</value>
                     <value xml:lang="fr">Appliquer Aura (sombre)</value>
+                    <value xml:lang="de">Aura anwenden (dunkel)</value>
+                    <value xml:lang="es">Aplicar Aura (oscuro)</value>
+                    <value xml:lang="it">Applica Aura (scuro)</value>
+                    <value xml:lang="pt">Aplicar Aura (escuro)</value>
                   </prop>
                   <prop oor:name="Target"><value>_self</value></prop>
                 </node>
-                <node oor:name="S1" oor:op="replace">
+                <node oor:name="m05" oor:op="replace">
                   <prop oor:name="URL"><value>private:separator</value></prop>
                 </node>
-                <node oor:name="M3" oor:op="replace">
+                <node oor:name="m06" oor:op="replace">
+                  <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?refresh</value></prop>
+                  <prop oor:name="Title">
+                    <value xml:lang="en-US">Refresh the ribbon (language, extensions)</value>
+                    <value xml:lang="fr">Actualiser le ruban (langue, extensions)</value>
+                    <value xml:lang="de">Menüband aktualisieren (Sprache, Erweiterungen)</value>
+                    <value xml:lang="es">Actualizar la cinta (idioma, extensiones)</value>
+                    <value xml:lang="it">Aggiorna la barra (lingua, estensioni)</value>
+                    <value xml:lang="pt">Atualizar a faixa (idioma, extensões)</value>
+                  </prop>
+                  <prop oor:name="Target"><value>_self</value></prop>
+                </node>
+                <node oor:name="m07" oor:op="replace">
+                  <prop oor:name="URL"><value>private:separator</value></prop>
+                </node>
+                <node oor:name="m08" oor:op="replace">
                   <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?restore</value></prop>
                   <prop oor:name="Title">
                     <value xml:lang="en-US">Restore original appearance</value>
-                    <value xml:lang="fr">Restaurer l'apparence d'origine</value>
+                    <value xml:lang="fr">Restaurer l&apos;apparence d&apos;origine</value>
+                    <value xml:lang="de">Ursprüngliches Erscheinungsbild wiederherstellen</value>
+                    <value xml:lang="es">Restaurar la apariencia original</value>
+                    <value xml:lang="it">Ripristina l&apos;aspetto originale</value>
+                    <value xml:lang="pt">Restaurar a aparência original</value>
                   </prop>
                   <prop oor:name="Target"><value>_self</value></prop>
                 </node>
