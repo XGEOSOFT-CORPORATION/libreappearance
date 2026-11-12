@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Registers the Aura icon themes and templates shipped inside the extension. -->
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
+                    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    oor:name="Paths" oor:package="org.openoffice.Office">
+  <node oor:name="Paths">
+    <node oor:name="Iconset" oor:op="fuse">
+      <node oor:name="InternalPaths">
+        <node oor:name="%origin%/iconsets" oor:op="fuse"/>
+      </node>
+    </node>
+    <node oor:name="Template" oor:op="fuse">
+      <node oor:name="InternalPaths">
+        <node oor:name="%origin%/templates" oor:op="fuse"/>
+      </node>
+    </node>
+  </node>
+</oor:component-data>

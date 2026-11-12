@@ -1,0 +1,6 @@
+Aura gives LibreOffice (Writer, Calc, Impress, Draw) a modern, light and clean appearance:
+- Aura light and dark icon themes (full coverage, slate + indigo palette);
+- "Aura Light" and "Aura Dark" application colour schemes;
+- compact tabbed interface with every feature organised;
+- Premium document templates for Writer, Calc and Impress.
+Use Tools ▸ Aura to apply or restore the original appearance.

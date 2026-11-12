@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tools > Aura menu, available in every LibreOffice module. -->
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
+                    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    oor:name="Addons" oor:package="org.openoffice.Office">
+  <node oor:name="AddonUI">
+    <node oor:name="OfficeMenuBarMerging">
+      <node oor:name="org.libreappearance.aura" oor:op="replace">
+        <node oor:name="M1" oor:op="replace">
+          <prop oor:name="MergePoint"><value>.uno:ToolsMenu\.uno:AutoCorrectDlg</value></prop>
+          <prop oor:name="MergeCommand"><value>AddAfter</value></prop>
+          <prop oor:name="MergeFallback"><value>AddPath</value></prop>
+          <prop oor:name="MergeContext"><value/></prop>
+          <node oor:name="MenuItems">
+            <node oor:name="S0" oor:op="replace">
+              <prop oor:name="URL"><value>private:separator</value></prop>
+            </node>
+            <node oor:name="M1" oor:op="replace">
+              <prop oor:name="URL"><value>org.libreappearance.aura:menu</value></prop>
+              <prop oor:name="Title">
+                <value xml:lang="en-US">Aura</value>
+                <value xml:lang="fr">Aura</value>
+              </prop>
+              <node oor:name="Submenu">
+                <node oor:name="M1" oor:op="replace">
+                  <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?apply_light</value></prop>
+                  <prop oor:name="Title">
+                    <value xml:lang="en-US">Apply Aura (light)</value>
+                    <value xml:lang="fr">Appliquer Aura (clair)</value>
+                  </prop>
+                  <prop oor:name="Target"><value>_self</value></prop>
+                </node>
+                <node oor:name="M2" oor:op="replace">
+                  <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?apply_dark</value></prop>
+                  <prop oor:name="Title">
+                    <value xml:lang="en-US">Apply Aura (dark)</value>
+                    <value xml:lang="fr">Appliquer Aura (sombre)</value>
+                  </prop>
+                  <prop oor:name="Target"><value>_self</value></prop>
+                </node>
+                <node oor:name="S1" oor:op="replace">
+                  <prop oor:name="URL"><value>private:separator</value></prop>
+                </node>
+                <node oor:name="M3" oor:op="replace">
+                  <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?restore</value></prop>
+                  <prop oor:name="Title">
+                    <value xml:lang="en-US">Restore original appearance</value>
+                    <value xml:lang="fr">Restaurer l'apparence d'origine</value>
+                  </prop>
+                  <prop oor:name="Target"><value>_self</value></prop>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+  </node>
+</oor:component-data>

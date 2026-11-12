@@ -1,0 +1,79 @@
+{
+  "$comment": "Aura ribbon (Tabbed Compact). 'hide' tidies buttons off the Home tab strip only; build_ribbon.py fails unless every command of the stock ribbon is still in the new ribbon (another tab or a tab's drop-down menu). 'labels' keys are the translation context of a label (text after '|').",
+  "modules": {
+    "swriter": {
+      "home": "HomeLabel",
+      "labels": {
+        "fr": {
+          "HomeLabel": "~Accueil",
+          "ExtensionLabel": "E~xtensions",
+          "HomeMenuButton": "_Accueil"
+        }
+      },
+      "hide": [
+        ".uno:ParaLeftToRight",
+        ".uno:ParaRightToLeft",
+        ".uno:InsertTable",
+        ".uno:InsertGraphic",
+        ".uno:InsertPagebreak",
+        ".uno:CharmapControl"
+      ]
+    },
+    "scalc": {
+      "home": "HomeLabel",
+      "labels": {
+        "fr": {
+          "HomeLabel": "~Accueil",
+          "ExtensionLabel": "E~xtensions"
+        }
+      },
+      "hide": [
+        ".uno:SubScript",
+        ".uno:SuperScript",
+        ".uno:InsertCell"
+      ]
+    },
+    "simpress": {
+      "home": "HomeLabel",
+      "labels": {
+        "fr": {
+          "HomeLabel": "~Accueil",
+          "ExtensionLabel": "E~xtensions",
+          "HomeMenuButton": "_Accueil"
+        }
+      },
+      "hide": [
+        ".uno:Grow",
+        ".uno:Shrink",
+        ".uno:ParaLeftToRight",
+        ".uno:ParaRightToLeft",
+        ".uno:ParaspaceIncrease",
+        ".uno:ParaspaceDecrease",
+        ".uno:CellVertTop",
+        ".uno:CellVertCenter",
+        ".uno:CellVertBottom",
+        ".uno:InsertAVMedia",
+        ".uno:InsertObjectChart",
+        ".uno:InsertTable",
+        ".uno:InsertGraphic"
+      ]
+    },
+    "sdraw": {
+      "home": "HomeLabel",
+      "labels": {
+        "fr": {
+          "HomeLabel": "~Accueil",
+          "ExtensionLabel": "E~xtensions",
+          "HomeMenuButton": "_Accueil"
+        }
+      },
+      "hide": [
+        ".uno:CapturePoint",
+        ".uno:GridUse",
+        ".uno:HelplinesUse",
+        ".uno:InsertGraphic",
+        ".uno:InsertTable"
+      ]
+    }
+  }
+}

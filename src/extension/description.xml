@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<description xmlns="http://openoffice.org/extensions/description/2006"
+             xmlns:d="http://openoffice.org/extensions/description/2006"
+             xmlns:l="http://libreoffice.org/extensions/description/2011"
+             xmlns:xlink="http://www.w3.org/1999/xlink">
+  <identifier value="org.libreappearance.aura"/>
+  <version value="@VERSION@"/>
+  <platform value="all"/>
+  <display-name>
+    <name lang="fr">Aura — Apparence moderne pour LibreOffice</name>
+    <name lang="en">Aura — Modern appearance for LibreOffice</name>
+  </display-name>
+  <publisher>
+    <name lang="fr" xlink:href="https://github.com/xgeosoft/libreappearance">XGEOSOFT</name>
+    <name lang="en" xlink:href="https://github.com/xgeosoft/libreappearance">XGEOSOFT</name>
+  </publisher>
+  <extension-description>
+    <src lang="fr" xlink:href="description/desc_fr.txt"/>
+    <src lang="en" xlink:href="description/desc_en.txt"/>
+  </extension-description>
+  <dependencies>
+    <l:LibreOffice-minimal-version value="24.2" d:name="LibreOffice 24.2"/>
+  </dependencies>
+</description>

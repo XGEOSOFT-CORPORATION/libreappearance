@@ -1,0 +1,260 @@
+/* Aura — GTK 3 theme for LibreOffice's own windows.
+ * Shared rules; tools/build_gtk.py prepends the Adwaita base import and the
+ * @aura_* colour definitions of each variant (light / dark).
+ */
+
+/* ---------------------------------------------------------------- base */
+window, .background, dialog {
+  background-color: @aura_window_bg;
+  color: @aura_fg;
+}
+.view, iconview, textview text, treeview.view, list, .list {
+  background-color: @aura_view_bg;
+  color: @aura_fg;
+}
+*:disabled, *:disabled label, label:disabled { color: @aura_insensitive_fg; }
+.dim-label, label.dim-label { color: @aura_fg_muted; }
+
+*:selected, .view:selected, treeview.view:selected, iconview:selected,
+row:selected, list row:selected, menuitem:selected {
+  background-color: @aura_accent;
+  color: @aura_selected_fg;
+}
+selection, entry selection, textview text selection {
+  background-color: alpha(@aura_accent, 0.22);
+  color: @aura_fg;
+}
+row:hover, list row:hover, treeview.view:hover { background-color: @aura_surface; }
+*:focus { outline-color: alpha(@aura_accent, 0.55); outline-width: 1px; outline-offset: -3px; }
+
+separator { background-color: @aura_border; min-width: 1px; min-height: 1px; }
+frame > border, .frame, scrolledwindow.frame, viewport.frame { border-color: @aura_border; }
+
+/* ------------------------------------------------------------- buttons */
+button {
+  background-image: none;
+  background-color: @aura_view_bg;
+  border: 1px solid @aura_border_strong;
+  border-radius: 6px;
+  box-shadow: none;
+  text-shadow: none;
+  -gtk-icon-shadow: none;
+  color: @aura_fg;
+  min-height: 22px;
+  padding: 3px 10px;
+}
+button:hover { background-image: none; background-color: @aura_surface; border-color: @aura_border_strong; }
+button:active, button:checked {
+  background-image: none;
+  background-color: @aura_accent_soft;
+  border-color: @aura_accent;
+  color: @aura_accent;
+  box-shadow: none;
+}
+button:disabled { background-color: @aura_window_bg; border-color: @aura_border; color: @aura_insensitive_fg; }
+button.default, button.suggested-action {
+  background-color: @aura_accent;
+  border-color: @aura_accent;
+  color: @aura_selected_fg;
+}
+button.default:hover, button.suggested-action:hover { background-color: @aura_accent_hover; border-color: @aura_accent_hover; }
+button.destructive-action { background-color: #E11D48; border-color: #E11D48; color: #FFFFFF; }
+
+button.flat, toolbar button, .toolbar button, .inline-toolbar button {
+  background-color: transparent;
+  border-color: transparent;
+  border-radius: 6px;
+  padding: 3px;
+}
+button.flat:hover, toolbar button:hover, .toolbar button:hover { background-color: @aura_surface; border-color: transparent; }
+toolbar button:checked, .toolbar button:checked, button.flat:checked {
+  background-color: @aura_accent_soft;
+  border-color: transparent;
+  color: @aura_accent;
+}
+toolbar, .toolbar, .inline-toolbar {
+  background-image: none;
+  background-color: @aura_window_bg;
+  border: none;
+  box-shadow: none;
+  padding: 2px;
+}
+
+/* ------------------------------------------------------ text entries */
+entry, spinbutton:not(.vertical), spinbutton.vertical entry, combobox entry {
+  background-image: none;
+  background-color: @aura_view_bg;
+  border: 1px solid @aura_border_strong;
+  border-radius: 6px;
+  box-shadow: none;
+  color: @aura_fg;
+  min-height: 22px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+entry:focus, spinbutton:focus:not(.vertical), combobox entry:focus {
+  border-color: @aura_accent;
+  box-shadow: 0 0 0 2px alpha(@aura_accent, 0.18);
+}
+entry:disabled, spinbutton:disabled { background-color: @aura_surface; color: @aura_insensitive_fg; }
+spinbutton:not(.vertical) button, spinbutton:not(.vertical) button:hover {
+  background-color: transparent; border: none; border-left: 1px solid @aura_border; border-radius: 0;
+}
+combobox button.combo, combobox box.linked > button.combo { padding: 2px 8px; }
+combobox entry + button.combo { border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+entry.error, entry.warning { border-color: #E11D48; }
+
+/* --------------------------------------------------------- notebooks */
+notebook { background-color: @aura_window_bg; border: none; }
+notebook.frame, notebook > header, notebook > header.top { border: none; }
+notebook > stack:not(:only-child) { background-color: @aura_window_bg; }
+notebook > header {
+  background-color: @aura_window_bg;
+  border-color: @aura_border;
+  box-shadow: none;
+  padding: 0;
+}
+notebook > header.top { box-shadow: inset 0 -1px @aura_border; }
+notebook > header > tabs > tab {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: @aura_fg_muted;
+  min-height: 22px;
+  padding: 6px 12px;
+  font-weight: normal;
+}
+notebook > header > tabs > tab:hover { color: @aura_fg; background-color: transparent; }
+notebook > header.top > tabs > tab:hover { box-shadow: inset 0 -2px @aura_border_strong; }
+notebook > header.top > tabs > tab:checked { color: @aura_fg; box-shadow: inset 0 -2px @aura_accent; }
+notebook > header > tabs > tab:checked, notebook > header > tabs > tab:selected,
+notebook > header > tabs > tab:checked:selected {
+  background-color: transparent;
+  background-image: none;
+  color: @aura_fg;
+}
+notebook > header.bottom > tabs > tab:checked { color: @aura_fg; box-shadow: inset 0 2px @aura_accent; }
+notebook > header.left > tabs > tab:checked { color: @aura_fg; box-shadow: inset -2px 0 @aura_accent; }
+notebook > header.right > tabs > tab:checked { color: @aura_fg; box-shadow: inset 2px 0 @aura_accent; }
+
+/* ------------------------------------------------- menus and popups */
+menubar {
+  background-color: @aura_window_bg;
+  box-shadow: inset 0 -1px @aura_border;
+  padding: 0 4px;
+}
+menubar > menuitem { padding: 4px 10px; border-radius: 4px; color: @aura_fg; }
+menubar > menuitem:hover { background-color: @aura_surface; box-shadow: none; color: @aura_fg; }
+
+menu, .menu, .context-menu {
+  background-color: @aura_view_bg;
+  border: 1px solid @aura_border;
+  border-radius: 8px;
+  padding: 4px;
+  margin: 4px;
+}
+.csd menu, .csd .menu, .csd .context-menu { border: none; }
+menu menuitem, .menu menuitem, .context-menu menuitem {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: @aura_fg;
+  min-height: 20px;
+  text-shadow: none;
+}
+menu menuitem:hover, .menu menuitem:hover, .context-menu menuitem:hover {
+  background-color: @aura_accent_soft;
+  color: @aura_fg;
+}
+menu menuitem:disabled { color: @aura_insensitive_fg; }
+menu menuitem accelerator { color: @aura_fg_muted; }
+menu separator { margin: 4px 0; background-color: @aura_border; }
+menu arrow, menu check, menu radio { color: @aura_fg_muted; }
+
+popover, popover.background {
+  background-color: @aura_view_bg;
+  border: 1px solid @aura_border;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px alpha(black, 0.12);
+}
+tooltip, tooltip.background {
+  background-color: @aura_tooltip_bg;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  padding: 4px 8px;
+}
+tooltip *, tooltip label { color: @aura_tooltip_fg; }
+
+/* ----------------------------------------------------- scrollbars */
+scrollbar, scrollbar.vertical, scrollbar.horizontal {
+  background-color: transparent;
+  border: none;
+}
+scrollbar slider {
+  background-color: alpha(@aura_fg, 0.22);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  min-width: 6px;
+  min-height: 6px;
+}
+scrollbar slider:hover { background-color: alpha(@aura_fg, 0.38); }
+scrollbar slider:active { background-color: @aura_accent; }
+
+/* ----------------------------------------------- check / radio / switch */
+check, radio {
+  background-image: none;
+  background-color: @aura_view_bg;
+  border: 1px solid @aura_border_strong;
+  box-shadow: none;
+  color: transparent;
+  min-width: 14px;
+  min-height: 14px;
+}
+check { border-radius: 4px; }
+radio { border-radius: 999px; }
+check:hover, radio:hover { border-color: @aura_accent; }
+check:checked, check:indeterminate, radio:checked {
+  background-color: @aura_accent;
+  border-color: @aura_accent;
+  color: @aura_selected_fg;
+}
+switch { background-color: @aura_surface_strong; border: none; border-radius: 999px; }
+switch:checked { background-color: @aura_accent; }
+switch slider { background-color: #FFFFFF; border: none; border-radius: 999px; box-shadow: 0 1px 2px alpha(black, 0.25); }
+
+/* --------------------------------------------- progress, scales, levels */
+progressbar trough, scale trough, levelbar trough {
+  background-color: @aura_surface_strong;
+  border: none;
+  border-radius: 999px;
+}
+progressbar progress, scale highlight, levelbar block.filled {
+  background-color: @aura_accent;
+  border: none;
+  border-radius: 999px;
+}
+scale slider {
+  background-color: #FFFFFF;
+  border: 1px solid @aura_border_strong;
+  border-radius: 999px;
+  box-shadow: 0 1px 2px alpha(black, 0.15);
+}
+
+/* -------------------------------------------------- lists and trees */
+treeview.view header button, treeview.view header button:hover {
+  background-color: @aura_window_bg;
+  border-color: @aura_border;
+  border-radius: 0;
+  color: @aura_fg_muted;
+  font-weight: 600;
+}
+treeview.view { border-color: @aura_border; }
+treeview.view:selected:focus, treeview.view:selected { background-color: @aura_accent; color: @aura_selected_fg; }
+iconview:selected { border-radius: 6px; }
+
+/* ------------------------------------------------------------ misc */
+infobar, .info { background-color: @aura_accent_soft; color: @aura_fg; border: none; }
+expander title arrow { color: @aura_fg_muted; }
+link, *:link { color: @aura_accent; }
+paned > separator { background-color: @aura_border; background-image: none; }
+statusbar { background-color: @aura_window_bg; color: @aura_fg_muted; border-top: 1px solid @aura_border; }
