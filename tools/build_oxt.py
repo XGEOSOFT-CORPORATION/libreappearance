@@ -27,6 +27,8 @@ def main():
     desc = stage / "description.xml"
     desc.write_text(desc.read_text(encoding="utf-8").replace("@VERSION@", version), encoding="utf-8")
     shutil.copy(ROOT / "LICENSE", stage / "LICENSE")
+    (stage / "design").mkdir(exist_ok=True)
+    shutil.copy(ROOT / "design" / "tokens.json", stage / "design" / "tokens.json")
 
     fonts = stage / "fonts"
     fonts.mkdir(exist_ok=True)
@@ -36,7 +38,7 @@ def main():
 
     for required in ("iconsets/images_aura_svg.zip", "registry/ColorSchemes.xcu",
                      "templates/Aura/aura-document.ott", "gtk/Aura/gtk-3.0/gtk.css",
-                     "ui/swriter/ui/notebookbar_compact.ui", "ui/overrides.json",
+                     "ui/ribbon.json", "iconsets/built-for.txt",
                      "python/pythonpath/aura_ribbon.py", "fonts/Inter-Regular.otf"):
         if not (stage / required).exists():
             raise SystemExit(f"missing generated asset: {required} (run `make assets`)")

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- At start-up, Aura regenerates its ribbons if the UI language or the installed extensions changed. -->
+<!-- At start-up, Aura regenerates its ribbons if the UI language, the installed extensions or LibreOffice
+     changed; on the first visible window, it welcomes a user who has not applied Aura yet. -->
 <oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
                     xmlns:xs="http://www.w3.org/2001/XMLSchema"
                     oor:name="Jobs" oor:package="org.openoffice.Office">
@@ -10,6 +11,11 @@
   </node>
   <node oor:name="Events">
     <node oor:name="OnStartApp" oor:op="fuse">
+      <node oor:name="JobList">
+        <node oor:name="org.libreappearance.aura.RibbonRefresh" oor:op="replace"/>
+      </node>
+    </node>
+    <node oor:name="onFirstVisibleTask" oor:op="fuse">
       <node oor:name="JobList">
         <node oor:name="org.libreappearance.aura.RibbonRefresh" oor:op="replace"/>
       </node>

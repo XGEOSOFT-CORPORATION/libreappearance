@@ -7,15 +7,17 @@ tools/
   build_icons.py            Colibre SVG (installé avec LibreOffice) -> images_aura[_dark]_svg.zip
   build_registry.py         tokens -> registry/ColorSchemes.xcu
   build_gtk.py              tokens.chrome + src/gtk/aura.css -> gtk/Aura, gtk/Aura-dark (GTK 3)
-  build_ribbon.py           notebookbar_compact.ui installé + design/ribbon.json -> ui/<module>/
-                            (onglets scindés par thème, commandes mortes corrigées ; échoue si
-                            une commande du ruban d'origine disparaît du ruban)
+  build_ribbon.py           vérifie design/ribbon.json sur le ruban de ce LibreOffice et le livre
+                            (ui/ribbon.json) ; l'extension l'applique au ruban de la version
+                            installée chez l'utilisateur
   build_templates.py        pilote un LibreOffice headless (profil jetable) via UNO
                             -> templates/Aura/*.ott|ots|otp (+ exemples et PDF)
   build_oxt.py              src/extension + assets générés -> dist/Aura-<version>.oxt
   test_extension.py         installe l'oxt dans un profil jetable et vérifie le tout
   test_commands.py          chaque commande des rubans exécutable dans son module (comparé au
                             ruban d'origine : aucune régression, toute commande ajoutée passe)
+  test_dictation.py         commandes vocales et espacement dans les 7 langues (sans LibreOffice)
+  test_voice_office.py      dictée de bout en bout : vrai moteur sur des WAV -> Writer et Calc
   test_table_html.py        analyse du HTML d'Excel (classes CSS, bordures en pt, fusions)
 src/extension/              fichiers statiques de l'extension
   description.xml           identifiant org.libreappearance.aura, LibreOffice >= 24.2
@@ -26,7 +28,11 @@ src/extension/              fichiers statiques de l'extension
   python/aura.py            composant UNO (XJobExecutor, XJob) : appliquer / restaurer / actualiser,
                             collage de tableau, polices
   python/pythonpath/        aura_ribbon.py (rubans, onglet Extensions, langue),
-                            aura_table.py (tableaux : Calc/HTML -> Writer/Impress)
+                            aura_table.py (tableaux : Calc/HTML -> Writer/Impress),
+                            aura_dictation.py (dictée : moteur, fenêtre, insertion),
+                            aura_voice.py (commandes vocales, espacement ; sans UNO),
+                            aura_voice_engine.py (micro -> Whisper -> JSON, processus séparé),
+                            aura_panel.py (Panneau Aura, accueil), aura_icons.py (icônes)
 ```
 
 ## Ce que l'extension peut — et ne peut pas — changer en 24.2
@@ -114,3 +120,67 @@ lanceurs sont propres à Linux. Le mode clair/sombre des fenêtres utilise
 `Common/Misc/Appearance`. Inter est installée dans les polices de l'utilisateur
 (`%LOCALAPPDATA%\Microsoft\Windows\Fonts` + registre HKCU, `~/Library/Fonts`,
 `~/.local/share/fonts`) seulement si elle manque, et retirée par Restaurer.
+
+## Compatibilité 24.2 et suivantes
+
+Rien n'est figé sur une version : les rubans sont produits au moment de l'application à partir du
+`notebookbar_compact.ui` **installé** (`$BRAND_BASE_DIR/$BRAND_SHARE_SUBDIR/...`, valable aussi sur
+macOS) ; un onglet ou une section absente est ignorée, et si le résultat masquait une seule commande
+du ruban d'origine, le module garde le ruban de LibreOffice. L'état enregistré inclut la version
+de LibreOffice : après une mise à jour, le job de démarrage reconstruit rubans et icônes (à partir
+de Colibre installé). Les réglages qui peuvent ne pas exister selon la version sont écrits « si
+présents ». Le Python des composants vise 3.8+ et n'utilise que la bibliothèque standard.
+
+## Sécurité
+
+- **Suppression** : `files.json` peut être modifié par quiconque accède au profil ; Aura ne supprime
+  ou ne déplace qu'un fichier dont le chemin correspond à ses propres emplacements (rubans du
+  profil, thèmes `Aura*`, lanceurs `libreoffice-*.desktop`, polices `Inter*`, sauvegardes).
+- **Presse-papiers** : le classeur intégré est chargé caché, en lecture seule, filtre `calc8`
+  imposé, macros jamais exécutées, liens jamais mis à jour ; HTML limité (20 Mo, 5 000 cellules,
+  fusions ≤ 200).
+- **Commandes** : les URL `service:…Aura?…` peuvent être déclenchées par un document ; Restaurer
+  demande confirmation, la désinstallation n'existe que dans le panneau.
+- **Processus** : le redémarrage passe ses valeurs en arguments (`sh -c script -- pid thème programme`),
+  jamais dans le texte du script.
+- **Préférences** : chaque valeur de `settings.json` est validée (type et valeurs permises).
+- **Ctrl+V** : posé par l'application et rendu à `.uno:Paste` par la restauration ; aucun raccourci
+  statique, donc si Python manque, rien n'est cassé.
+- **Profils multiples** : un thème ou lanceur Aura déjà présent (autre profil) est mis à jour sur
+  place sans être revendiqué.
+
+## Dictée vocale
+
+```
+LibreOffice (aura_dictation)                  processus séparé (venv du profil)
+  Ctrl+Alt+Espace -> Session.start ──Popen──>  aura_voice_engine.py
+                                               micro (PortAudio, sinon pw-record / parecord /
+                                               arecord / ffmpeg) -> découpage sur les pauses
+                                               -> Whisper (faster-whisper, GPU si possible)
+  thread lecteur <──── JSON par ligne ──────   status / level / partial / final / error
+  AsyncCallback -> thread principal
+  aura_voice.parse : commande ou texte ?
+  insertion : Writer (curseur), Calc (cellule), Impress/Draw (forme)
+```
+
+Le moteur ne tourne jamais dans le processus de LibreOffice : un modèle de plusieurs gigaoctets ou une
+bibliothèque CUDA ne peuvent ni le bloquer ni le faire tomber. Il s'arrête quand son entrée standard se
+ferme, donc il ne survit jamais à LibreOffice. Les documents ne sont touchés que depuis le thread principal
+(`com.sun.star.awt.AsyncCallback`).
+
+**Langue.** En mode automatique, la langue est détectée à chaque phrase mais seulement parmi les 7 langues
+de dictée. Une phrase courte (< 1,2 s) garde la langue précédente. On ne change de langue que si la
+nouvelle est nettement plus probable (+0,25), sinon un « OK » isolé ferait basculer la dictée.
+
+**Qualité.** Le prompt de Whisper contient la fin de la phrase précédente dans la même langue, le vocabulaire
+de l'utilisateur, et une amorce par langue : caractères simplifiés ou traditionnels, ponctuation japonaise,
+signes diacritiques du yoruba. Les hallucinations connues de Whisper sur le silence (« Sous-titres réalisés
+par la communauté d'Amara.org », « ご視聴ありがとうございました »…) sont écartées.
+
+**Espacement.** `aura_voice.join` regarde le texte avant le curseur. Pas d'espace en japonais et en chinois,
+ni avant la ponctuation fermante. Espace insécable avant `; : ! ? »` et après `«` en français. Majuscule en
+début de phrase, et minuscule au premier mot d'une phrase coupée par une pause (sauf sigles et « I » anglais).
+
+**GPU.** Avec une carte NVIDIA, l'installation ajoute cuBLAS et cuDNN (paquets pip `nvidia-*`) que le
+moteur charge par leur chemin. Si la carte ne peut pas exécuter le modèle, le moteur repasse sur le
+processeur (int8) tout seul.

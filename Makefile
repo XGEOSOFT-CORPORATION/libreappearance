@@ -5,7 +5,7 @@ LO_CONFIG  ?= /usr/lib/libreoffice/share/config
 INTER_DIR  ?= /usr/share/fonts/opentype/inter
 STAGE      := build/oxt
 
-.PHONY: all assets icons registry templates samples gtk ribbon oxt install uninstall clean test
+.PHONY: all assets icons registry templates samples gtk ribbon oxt install uninstall clean test test-voice
 
 all: oxt
 
@@ -43,5 +43,9 @@ clean:
 
 test: oxt
 	$(PYTHON) tools/test_table_html.py
+	$(PYTHON) tools/test_dictation.py
 	$(UNO_PYTHON) tools/test_extension.py
 	$(UNO_PYTHON) tools/test_commands.py
+
+test-voice: oxt
+	$(UNO_PYTHON) tools/test_voice_office.py --venv $(VOICE_VENV)

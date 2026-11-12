@@ -22,6 +22,38 @@
                 <value xml:lang="fr">Aura</value>
               </prop>
               <node oor:name="Submenu">
+                <node oor:name="m00" oor:op="replace">
+                  <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?panel</value></prop>
+                  <prop oor:name="Title">
+                    <value xml:lang="en-US">Aura panel…</value>
+                    <value xml:lang="fr">Panneau Aura…</value>
+                    <value xml:lang="de">Aura-Bedienfeld…</value>
+                    <value xml:lang="es">Panel de Aura…</value>
+                    <value xml:lang="it">Pannello Aura…</value>
+                    <value xml:lang="pt">Painel Aura…</value>
+                  </prop>
+                  <prop oor:name="Target"><value>_self</value></prop>
+                </node>
+                <node oor:name="m00d" oor:op="replace">
+                  <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?dictation</value></prop>
+                  <prop oor:name="Title">
+                    <value xml:lang="en-US">Dictation (start / stop)</value>
+                    <value xml:lang="fr">Dictée vocale (démarrer / arrêter)</value>
+                    <value xml:lang="de">Diktat (starten / beenden)</value>
+                    <value xml:lang="es">Dictado (iniciar / detener)</value>
+                    <value xml:lang="it">Dettatura (avvia / interrompi)</value>
+                    <value xml:lang="pt">Ditado (iniciar / parar)</value>
+                    <value xml:lang="ru">Голосовой ввод (старт / стоп)</value>
+                    <value xml:lang="ja">音声入力（開始／停止）</value>
+                    <value xml:lang="zh-CN">语音听写（开始／停止）</value>
+                    <value xml:lang="zh-TW">語音聽寫（開始／停止）</value>
+                    <value xml:lang="yo">Ìkọ̀wé ohùn (bẹ̀rẹ̀ / dúró)</value>
+                  </prop>
+                  <prop oor:name="Target"><value>_self</value></prop>
+                </node>
+                <node oor:name="m00a" oor:op="replace">
+                  <prop oor:name="URL"><value>private:separator</value></prop>
+                </node>
                 <node oor:name="m01" oor:op="replace">
                   <prop oor:name="URL"><value>service:org.libreappearance.aura.Aura?paste_table</value></prop>
                   <prop oor:name="Title">

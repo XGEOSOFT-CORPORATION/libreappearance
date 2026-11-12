@@ -1,0 +1,98 @@
+# Aura on real Linux, Windows and macOS machines, with several LibreOffice versions.
+#   build : Ubuntu 24.04 + LibreOffice 24.2 (the oldest supported release) -> dist/Aura-*.oxt
+#   test  : the same .oxt installed in a throw-away profile on each system, then
+#           apply / restore / security checks (test_extension.py), every ribbon
+#           command run in its module (test_commands.py) and the HTML paste parser.
+name: cross-platform
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: LibreOffice 24.2, Python UNO, Colibre icons, Inter
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libreoffice-writer libreoffice-calc libreoffice-impress libreoffice-draw \
+            libreoffice-style-colibre python3-uno fonts-inter make
+          soffice --version
+      - name: Build the extension
+        run: make oxt UNO_PYTHON=/usr/bin/python3 PYTHON=/usr/bin/python3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aura-oxt
+          path: dist/*.oxt
+
+  linux:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: aura-oxt, path: dist }
+      - name: LibreOffice 24.2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libreoffice-writer libreoffice-calc libreoffice-impress libreoffice-draw \
+            libreoffice-style-colibre python3-uno
+      - run: python3 tools/test_table_html.py
+      - run: /usr/bin/python3 tools/test_extension.py
+      - run: /usr/bin/python3 tools/test_commands.py
+
+  windows:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: [libreoffice-fresh, libreoffice-still]   # latest and previous LibreOffice branch
+    env:
+      AURA_SOFFICE: C:\Program Files\LibreOffice\program\soffice.exe
+      LO_PYTHON: C:\Program Files\LibreOffice\program\python.exe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: aura-oxt, path: dist }
+      - name: Install LibreOffice (${{ matrix.channel }})
+        run: choco install ${{ matrix.channel }} -y --no-progress
+      - run: python tools/test_table_html.py
+      - name: Apply / restore / security
+        run: '& $env:LO_PYTHON tools\test_extension.py'
+      - name: Every ribbon command
+        run: '& $env:LO_PYTHON tools\test_commands.py'
+
+  macos:
+    needs: build
+    runs-on: macos-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        cask: [libreoffice, libreoffice-still]   # latest and previous LibreOffice branch
+    env:
+      AURA_SOFFICE: /Applications/LibreOffice.app/Contents/MacOS/soffice
+      LO_PYTHON: /Applications/LibreOffice.app/Contents/Resources/python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: aura-oxt, path: dist }
+      - name: Install LibreOffice (${{ matrix.cask }})
+        run: brew install --cask ${{ matrix.cask }}
+      - run: python3 tools/test_table_html.py
+      - name: Apply / restore / security
+        run: '"$LO_PYTHON" tools/test_extension.py'
+      - name: Every ribbon command
+        run: '"$LO_PYTHON" tools/test_commands.py'

@@ -12,9 +12,7 @@ Targets
 
 The model (`Table`) is plain Python so the HTML side is testable without UNO.
 """
-import os
 import re
-import tempfile
 from html.parser import HTMLParser
 
 PX = 26.458   # 1/100 mm per CSS pixel
@@ -25,6 +23,8 @@ NAMED = {"black": 0x000000, "white": 0xFFFFFF, "windowtext": 0x000000, "red": 0x
          "grey": 0x808080, "silver": 0xC0C0C0, "navy": 0x000080, "maroon": 0x800000,
          "orange": 0xFFA500, "purple": 0x800080, "teal": 0x008080}
 LINE_STYLES = {"solid": 0, "dotted": 1, "dashed": 2, "double": 3}
+MAX_CELLS = 5000    # larger ranges go through LibreOffice's normal paste
+MAX_SPAN = 200      # a rowspan / colspan beyond this is not a real table
 
 
 class Border:
@@ -242,7 +242,7 @@ class _HTMLTable(HTMLParser):
             if a.get("height") and self.row_heights[-1] is None:
                 self.row_heights[-1] = parse_length(a["height"])
             self.cell = cell
-            self.rows[-1].append((cell, int(a.get("rowspan") or 1), int(a.get("colspan") or 1),
+            self.rows[-1].append((cell, _span(a.get("rowspan")), _span(a.get("colspan")),
                                   parse_length(a["width"]) if a.get("width") else None))
             self.inline = []
         elif self.cell is not None:
@@ -294,9 +294,20 @@ class _HTMLTable(HTMLParser):
             self.outside_text += len(data.strip())
 
 
+def _span(value):
+    try:
+        return max(1, min(MAX_SPAN, int(value or 1)))
+    except ValueError:
+        return 1
+
+
 def table_from_html(text):
     """Table from an HTML clipboard fragment, or None when it is not mainly a table."""
+    if re.match(r"Version:\d", text):   # Windows CF_HTML: a header of offsets precedes the HTML
+        text = text[text.find("<"):] if "<" in text else ""
     text = re.sub(r"(?is)<!--\s*StartFragment\s*-->|<!--\s*EndFragment\s*-->", "", text)
+    if len(text) > 20000000:   # 20 MB of HTML is not a clipboard table
+        return None
     p = _HTMLTable()
     p.feed(text)
     if not p.rows:
@@ -318,7 +329,7 @@ def table_from_html(text):
             c += cs
     n_rows = max(r for r, _ in grid) + 1
     n_cols = max(c for _, c in grid) + 1
-    if n_rows * n_cols < 2:
+    if n_rows * n_cols < 2 or n_rows * n_cols > MAX_CELLS:
         return None
     table = Table(n_rows, n_cols)
     widths = list(p.cols[:n_cols])
@@ -388,7 +399,7 @@ def table_from_calc(cell_range):
     addr = cell_range.getRangeAddress()
     n_rows = addr.EndRow - addr.StartRow + 1
     n_cols = addr.EndColumn - addr.StartColumn + 1
-    if n_rows * n_cols < 2:
+    if n_rows * n_cols < 2 or n_rows * n_cols > MAX_CELLS:
         return None
     table = Table(n_rows, n_cols)
     table.col_widths = [sheet.Columns.getByIndex(addr.StartColumn + c).Width for c in range(n_cols)]
@@ -457,17 +468,21 @@ def merge_overflow(table):
                     row[k].covered = True
 
 
-def load_calc_from_bytes(desktop, data, props):
-    """Open the clipboard's embedded spreadsheet (ODF bytes) as a hidden document."""
-    fd, path = tempfile.mkstemp(suffix=".ods", prefix="aura-paste-")
-    with os.fdopen(fd, "wb") as f:
-        f.write(data)
-    try:
-        import uno
-        doc = desktop.loadComponentFromURL(uno.systemPathToFileUrl(path), "_blank", 0,
-                                           props(Hidden=True, ReadOnly=True))
-    finally:
-        os.remove(path)
+def load_calc_from_bytes(desktop, data, props, ctx):
+    """Open the clipboard's embedded spreadsheet (ODF bytes) as a hidden document.
+
+    Loaded from memory: no temporary file (which Windows would keep locked) and
+    nothing written to disk.
+    """
+    import uno
+    stream = ctx.ServiceManager.createInstanceWithArgumentsAndContext(
+        "com.sun.star.io.SequenceInputStream", (uno.ByteSequence(data),), ctx)
+    # clipboard data is untrusted: Calc format only, never run macros, never update links
+    doc = desktop.loadComponentFromURL(
+        "private:stream", "_blank", 0,
+        props(InputStream=stream, Hidden=True, ReadOnly=True, FilterName="calc8",
+              MacroExecutionMode=uno.Any("short", 0),     # MacroExecMode.NEVER_EXECUTE
+              UpdateDocMode=uno.Any("short", 0)))         # UpdateDocMode.NO_UPDATE
     if doc is not None and not doc.supportsService("com.sun.star.sheet.SpreadsheetDocument"):
         doc.close(True)
         return None
@@ -501,6 +516,8 @@ def insert_writer(uno, doc, table):
     """Insert the table at the view cursor; returns the TextTable."""
     view = doc.getCurrentController().getViewCursor()
     text = view.getText()
+    if not view.isCollapsed():   # like a normal paste, replace the selected text
+        view.setString("")
     tt = doc.createInstance("com.sun.star.text.TextTable")
     tt.initialize(table.rows, table.cols)
     text.insertTextContent(view, tt, False)

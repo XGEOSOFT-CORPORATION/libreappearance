@@ -61,6 +61,10 @@ def main():
           [round(w / PT) for w in t.col_widths] == [96, 48, 48], [round(w / PT) for w in t.col_widths])
     check("a web page that merely contains a table is left to the normal paste",
           table_from_html(WEB_PAGE) is None)
+    cf_html = ("Version:0.9\r\nStartHTML:0000000105\r\nEndHTML:0000002000\r\n"
+               "StartFragment:0000000400\r\nEndFragment:0000001900\r\n" + EXCEL)
+    t2 = table_from_html(cf_html)
+    check("Windows clipboard (CF_HTML header) accepted", t2 is not None and (t2.rows, t2.cols) == (3, 3))
     print("\nall checks passed" if not failures else f"\n{len(failures)} check(s) failed")
     sys.exit(1 if failures else 0)
 

@@ -113,10 +113,8 @@ def split_tab(root, source, new_id, label, sections, drop=()):
             new_box.append(child)
         elif sid in dropped:
             box.remove(child)
-    moved = {(c.find("object")).get("id") for c in new_box.findall("child")}
-    missing = wanted - moved
-    if missing:
-        raise ValueError(f"{source}: unknown sections {sorted(missing)}")
+    if not new_box.findall("child"):   # none of these sections in this LibreOffice version
+        return False
 
     new_tab = copy.deepcopy(tab)
     _set_label(new_tab, new_id, label)
@@ -124,6 +122,53 @@ def split_tab(root, source, new_id, label, sections, drop=()):
     pos = kids.index(tab) + 1
     control.insert(pos, new_page)
     control.insert(pos + 1, new_tab)
+    return True
+
+
+class RibbonError(Exception):
+    """The stock ribbon of this LibreOffice version cannot be customised safely."""
+
+
+def customize(root, spec):
+    """Apply a design/ribbon.json module spec to a stock notebookbar_compact.ui tree.
+
+    Tolerant of other LibreOffice versions: a tab or section that does not
+    exist is skipped. Raises RibbonError when the result would hide any
+    command the stock ribbon shows (the caller then keeps the stock ribbon).
+    Returns the labels of the tabs added.
+    """
+    try:
+        tab_control(root)
+    except StopIteration:
+        raise RibbonError("no notebookbar tab control")
+    fixes = spec.get("fix", {})
+    original = {fixes.get(c, c) for c in commands(root, visible_only=True)}
+    for prop in root.iter("property"):
+        if prop.get("name") in ("action_name", "action-name") and prop.text in fixes:
+            prop.text = fixes[prop.text]
+    pages = tab_pages(root)
+    home = pages.get(spec.get("home"))
+    if home is not None:
+        hide = set(spec.get("hide", ()))
+        for obj in home.iter("object"):
+            actions = {p.text for p in obj.findall("property")
+                       if p.get("name") in ("action_name", "action-name")}
+            if actions & hide:
+                _prop(obj, "visible", "False")
+    added = []
+    for split in spec.get("split", []):
+        if split["from"] not in tab_pages(root):
+            continue
+        if "id" in split:
+            if split_tab(root, split["from"], split["id"], split["label"], split["sections"],
+                         split.get("drop", ())):
+                added.append(split["label"][1].replace("~", "").replace("_", ""))
+        else:
+            split_tab(root, split["from"], None, None, (), split["drop"])
+    missing = original - commands(root, visible_only=True)
+    if missing:
+        raise RibbonError("commands would leave the ribbon: " + ", ".join(sorted(missing)))
+    return added
 
 
 # ------------------------------------------------------------ Extensions tab

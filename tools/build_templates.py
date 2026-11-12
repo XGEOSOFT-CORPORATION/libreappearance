@@ -59,6 +59,21 @@ def setp(obj, **kw):
 
 
 # --------------------------------------------------------------- office I/O
+def find_office():
+    """soffice on Linux, Windows and macOS ($AURA_SOFFICE wins)."""
+    candidates = [os.environ.get("AURA_SOFFICE"), shutil.which("soffice"),
+                  r"C:\Program Files\LibreOffice\program\soffice.exe",
+                  "/Applications/LibreOffice.app/Contents/MacOS/soffice"]
+    return next((c for c in candidates if c and os.path.exists(c)), "soffice")
+
+
+def find_unopkg():
+    office = find_office()
+    folder, name = os.path.split(office)
+    tool = os.path.join(folder, "unopkg.exe" if name.lower().endswith(".exe") else "unopkg")
+    return tool if os.path.exists(tool) else (shutil.which("unopkg") or "unopkg")
+
+
 class Office:
     def __init__(self, soffice, profile=None):
         self.profile = Path(profile) if profile else Path(tempfile.mkdtemp(prefix="aura-lo-"))
@@ -627,7 +642,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True, help="templates output directory")
     ap.add_argument("--samples", help="also write example documents + PDFs here")
-    ap.add_argument("--soffice", default=shutil.which("soffice") or "soffice")
+    ap.add_argument("--soffice", default=find_office())
     ap.add_argument("--only", choices=["writer", "calc", "impress"])
     args = ap.parse_args()
 

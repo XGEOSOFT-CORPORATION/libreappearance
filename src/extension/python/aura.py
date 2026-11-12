@@ -59,11 +59,36 @@ CALC_CLASS_ID = "47bbb4cb-ce4c-4e80-a591-42d9ae74950f"  # spreadsheet documents,
 # words dropped from extension names to keep group titles short
 NAME_NOISE = re.compile(r"(?i)\b(libre ?office|open ?office|apache|integration|extension|add-?on|for)\b")
 
-# "light and fast" profile: settings changed by Apply and put back by Restore
+# LibreOffice settings Aura changes (from the user's Aura preferences) and Restore puts back
 SETTINGS = {
-    "/org.openoffice.Office.Common/Misc": {"ShowTipOfTheDay": False},
-    "/org.openoffice.Office.Common/Cache/GraphicManager": {"GraphicMemoryLimit": 600000000},
+    "/org.openoffice.Office.Common/Misc": ("ShowTipOfTheDay",),
+    "/org.openoffice.Office.Common/Cache/GraphicManager": ("GraphicMemoryLimit",),
 }
+
+# Aura preferences ($(user)/libreappearance/settings.json), edited in the Aura panel
+DEFAULTS = {
+    "theme": "light",                       # light | dark
+    "icons": "auto",                        # auto (follows the theme) | aura | aura_dark | original
+    "layout": "notebookbar_compact.ui",     # a .uno:ToolbarMode argument
+    "gtk": True,                            # Linux: Aura GTK theme through the launchers
+    "extensions_tab": True,                 # one group per installed extension
+    "templates": True,                      # new documents start from the Aura templates
+    "smart_paste": True,                    # Ctrl+V in Writer keeps spreadsheet formatting
+    "tips": False,                          # Tip of the Day at start-up
+    "graphic_cache": 600000000,             # bytes
+    "welcomed": False,                      # first-run welcome already shown
+    "dictation_language": "auto",           # auto | en | fr | es | ru | ja | yo | zh
+    "dictation_model": "auto",              # auto (GPU: large-v3-turbo, CPU: small) | a Whisper size
+    "dictation_device": "auto",             # auto | cpu | cuda
+    "dictation_yoruba": "whisper",          # whisper | mms (Meta MMS, more accurate, +3 GB)
+    "dictation_chinese": "simplified",      # simplified | traditional
+    "dictation_commands": True,             # "new paragraph", "virgule", "改行"... are commands
+    "dictation_glossary": "",               # names and terms the recogniser should know
+    "dictation_shortcut": True,             # Ctrl+Alt+Space starts / stops dictation
+}
+DICTATION_LANGUAGES = ("en", "fr", "es", "ru", "ja", "yo", "zh")
+LAYOUTS = ("notebookbar_compact.ui", "notebookbar.ui", "Single", "Default")
+ICONS = {"aura": "aura_svg", "aura_dark": "aura_dark_svg"}
 LAUNCHERS = ("startcenter", "writer", "calc", "impress", "draw", "math", "base")
 
 # module -> (ToolbarMode suffix, Applications node, WindowState package)
@@ -86,37 +111,35 @@ TEMPLATES = {
 
 MESSAGES = {
     "fr": {
-        "applied": "Aura est appliqué.\n\nFermez complètement LibreOffice puis relancez-le depuis le "
-                   "menu des applications : l'interface, les icônes et le ruban Aura s'afficheront "
-                   "partout.\nOutils ▸ Aura ▸ Restaurer pour revenir en arrière.",
+        "applied": "Aura est appliqué : un redémarrage affiche l'interface, les icônes et le ruban Aura partout.",
         "restored": "L'apparence d'origine est restaurée.\n\nRedémarrez LibreOffice pour finaliser.",
         "nobackup": "Aucune sauvegarde Aura à restaurer : l'apparence d'origine est déjà en place.",
         "refreshed": "Le ruban Aura est à jour (langue et extensions).\n\nIl s'affiche dans les "
                      "nouvelles fenêtres ; redémarrez LibreOffice pour l'avoir partout.",
         "notapplied": "Aura n'est pas appliqué : utilisez d'abord Outils ▸ Aura ▸ Appliquer.",
         "error": "Aura n'a pas pu terminer l'opération.",
+        "panel": "Panneau Aura", "restart_now": "Redémarrer LibreOffice maintenant ? (vos documents ouverts vous seront proposés à l'enregistrement)",
+        "confirm_restore": "Restaurer l'apparence d'origine de LibreOffice ?",
         "manage": "Gérer", "light": "Clair", "dark": "Sombre", "restore": "Restaurer",
-        "refresh": "Actualiser", "paste_table": "Coller le tableau",
+        "refresh": "Actualiser", "paste_table": "Coller le tableau", "dictation": "Dictée vocale",
         "notable": "Le presse-papiers ne contient pas de tableau de tableur (Calc, Excel ou page web).",
     },
     "en": {
-        "applied": "Aura is applied.\n\nQuit LibreOffice completely and start it again from the "
-                   "applications menu: the Aura interface, icons and ribbon will show everywhere.\n"
-                   "Use Tools ▸ Aura ▸ Restore to undo.",
+        "applied": "Aura is applied: a restart shows the Aura interface, icons and ribbon everywhere.",
         "restored": "The original appearance is restored.\n\nRestart LibreOffice to finish.",
         "nobackup": "No Aura backup to restore: the original appearance is already in place.",
         "refreshed": "The Aura ribbon is up to date (language and extensions).\n\nNew windows show "
                      "it; restart LibreOffice to have it everywhere.",
         "notapplied": "Aura is not applied: use Tools ▸ Aura ▸ Apply first.",
         "error": "Aura could not complete the operation.",
+        "panel": "Aura panel", "restart_now": "Restart LibreOffice now? (you will be asked to save open documents)",
+        "confirm_restore": "Restore LibreOffice's original appearance?",
         "manage": "Manage", "light": "Light", "dark": "Dark", "restore": "Restore",
-        "refresh": "Refresh", "paste_table": "Paste table",
+        "refresh": "Refresh", "paste_table": "Paste table", "dictation": "Dictation",
         "notable": "The clipboard holds no spreadsheet table (Calc, Excel or a web page).",
     },
     "de": {
-        "applied": "Aura ist angewendet.\n\nBeenden Sie LibreOffice vollständig und starten Sie es "
-                   "über das Anwendungsmenü neu: Oberfläche, Symbole und Aura-Menüband erscheinen "
-                   "überall.\nExtras ▸ Aura ▸ Wiederherstellen macht es rückgängig.",
+        "applied": "Aura ist angewendet: nach einem Neustart erscheinen Oberfläche, Symbole und Menüband von Aura überall.",
         "restored": "Das ursprüngliche Erscheinungsbild ist wiederhergestellt.\n\nStarten Sie "
                     "LibreOffice neu.",
         "nobackup": "Keine Aura-Sicherung vorhanden: das ursprüngliche Erscheinungsbild ist aktiv.",
@@ -124,50 +147,52 @@ MESSAGES = {
                      "zeigen es; starten Sie LibreOffice neu, um es überall zu sehen.",
         "notapplied": "Aura ist nicht angewendet: zuerst Extras ▸ Aura ▸ Anwenden.",
         "error": "Aura konnte den Vorgang nicht abschließen.",
+        "panel": "Aura-Bedienfeld", "restart_now": "LibreOffice jetzt neu starten? (offene Dokumente können gespeichert werden)",
+        "confirm_restore": "Das ursprüngliche Erscheinungsbild von LibreOffice wiederherstellen?",
         "manage": "Verwalten", "light": "Hell", "dark": "Dunkel", "restore": "Wiederherstellen",
-        "refresh": "Aktualisieren", "paste_table": "Tabelle einfügen",
+        "refresh": "Aktualisieren", "paste_table": "Tabelle einfügen", "dictation": "Diktat",
         "notable": "Die Zwischenablage enthält keine Tabelle (Calc, Excel oder Webseite).",
     },
     "es": {
-        "applied": "Aura está aplicado.\n\nCierre LibreOffice por completo y ábralo de nuevo desde "
-                   "el menú de aplicaciones: la interfaz, los iconos y la cinta Aura se mostrarán en "
-                   "todas partes.\nHerramientas ▸ Aura ▸ Restaurar para deshacer.",
+        "applied": "Aura está aplicado: al reiniciar se mostrarán la interfaz, los iconos y la cinta de Aura en todas partes.",
         "restored": "Se restauró la apariencia original.\n\nReinicie LibreOffice para terminar.",
         "nobackup": "No hay copia de Aura que restaurar: la apariencia original ya está activa.",
         "refreshed": "La cinta Aura está al día (idioma y extensiones).\n\nLas ventanas nuevas la "
                      "muestran; reinicie LibreOffice para verla en todas.",
         "notapplied": "Aura no está aplicado: use primero Herramientas ▸ Aura ▸ Aplicar.",
         "error": "Aura no pudo completar la operación.",
+        "panel": "Panel de Aura", "restart_now": "¿Reiniciar LibreOffice ahora? (se le pedirá guardar los documentos abiertos)",
+        "confirm_restore": "¿Restaurar la apariencia original de LibreOffice?",
         "manage": "Gestionar", "light": "Claro", "dark": "Oscuro", "restore": "Restaurar",
-        "refresh": "Actualizar", "paste_table": "Pegar tabla",
+        "refresh": "Actualizar", "paste_table": "Pegar tabla", "dictation": "Dictado",
         "notable": "El portapapeles no contiene una tabla de hoja de cálculo (Calc, Excel o web).",
     },
     "it": {
-        "applied": "Aura è applicato.\n\nChiudi completamente LibreOffice e riavvialo dal menu "
-                   "delle applicazioni: interfaccia, icone e barra Aura appariranno ovunque.\n"
-                   "Strumenti ▸ Aura ▸ Ripristina per annullare.",
+        "applied": "Aura è applicato: dopo il riavvio interfaccia, icone e barra Aura appariranno ovunque.",
         "restored": "L'aspetto originale è ripristinato.\n\nRiavvia LibreOffice per completare.",
         "nobackup": "Nessun backup Aura da ripristinare: l'aspetto originale è già attivo.",
         "refreshed": "La barra Aura è aggiornata (lingua ed estensioni).\n\nLe nuove finestre la "
                      "mostrano; riavvia LibreOffice per vederla ovunque.",
         "notapplied": "Aura non è applicato: usa prima Strumenti ▸ Aura ▸ Applica.",
         "error": "Aura non ha potuto completare l'operazione.",
+        "panel": "Pannello Aura", "restart_now": "Riavviare LibreOffice ora? (ti verrà chiesto di salvare i documenti aperti)",
+        "confirm_restore": "Ripristinare l'aspetto originale di LibreOffice?",
         "manage": "Gestisci", "light": "Chiaro", "dark": "Scuro", "restore": "Ripristina",
-        "refresh": "Aggiorna", "paste_table": "Incolla tabella",
+        "refresh": "Aggiorna", "paste_table": "Incolla tabella", "dictation": "Dettatura",
         "notable": "Gli appunti non contengono una tabella di foglio di calcolo (Calc, Excel o web).",
     },
     "pt": {
-        "applied": "O Aura foi aplicado.\n\nFeche totalmente o LibreOffice e abra-o novamente pelo "
-                   "menu de aplicações: a interface, os ícones e a faixa Aura aparecerão em todo "
-                   "lado.\nFerramentas ▸ Aura ▸ Restaurar para desfazer.",
+        "applied": "O Aura foi aplicado: ao reiniciar, a interface, os ícones e a faixa Aura aparecem em todo lado.",
         "restored": "A aparência original foi restaurada.\n\nReinicie o LibreOffice para concluir.",
         "nobackup": "Não há cópia do Aura para restaurar: a aparência original já está ativa.",
         "refreshed": "A faixa Aura está atualizada (idioma e extensões).\n\nAs novas janelas "
                      "mostram-na; reinicie o LibreOffice para a ver em todas.",
         "notapplied": "O Aura não está aplicado: use primeiro Ferramentas ▸ Aura ▸ Aplicar.",
         "error": "O Aura não conseguiu concluir a operação.",
+        "panel": "Painel Aura", "restart_now": "Reiniciar o LibreOffice agora? (ser-lhe-á pedido para guardar os documentos abertos)",
+        "confirm_restore": "Restaurar a aparência original do LibreOffice?",
         "manage": "Gerir", "light": "Claro", "dark": "Escuro", "restore": "Restaurar",
-        "refresh": "Atualizar", "paste_table": "Colar tabela",
+        "refresh": "Atualizar", "paste_table": "Colar tabela", "dictation": "Ditado",
         "notable": "A área de transferência não contém uma tabela de folha de cálculo (Calc, Excel ou web).",
     },
 }
@@ -205,6 +230,30 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
     def _get(self, path, name):
         return self._config(path).getPropertyValue(name)
 
+    def _get_optional(self, path, name):
+        """None when this LibreOffice version has no such setting."""
+        try:
+            node = self._config(path)
+            return node.getPropertyValue(name) if node.getPropertySetInfo().hasPropertyByName(name) else None
+        except Exception:
+            return None
+
+    def _set_optional(self, path, values):
+        """Write settings that may not exist in every LibreOffice version; skip missing ones."""
+        try:
+            node = self._config(path, update=True)
+            info = node.getPropertySetInfo()
+            for name, value in values.items():
+                if value is None or not info.hasPropertyByName(name):
+                    continue
+                if isinstance(value, uno.Any):
+                    uno.invoke(node, "setPropertyValue", (name, value))
+                else:
+                    node.setPropertyValue(name, value)
+            node.commitChanges()
+        except Exception as e:
+            print(f"Aura: setting {path} skipped ({e})")
+
     def _set(self, path, values):
         node = self._config(path, update=True)
         for name, value in values.items():
@@ -217,13 +266,51 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
     def _expand(self, url):
         return self._create("com.sun.star.util.PathSubstitution").substituteVariables(url, True)
 
+    def _settings_path(self):
+        return os.path.join(self._system(self._expand("$(user)")), "libreappearance", "settings.json")
+
+    def settings(self):
+        try:
+            with open(self._settings_path(), encoding="utf-8") as f:
+                stored = json.load(f)
+        except (OSError, ValueError):
+            stored = {}
+        valid = {
+            "theme": lambda v: v in VARIANTS, "icons": lambda v: v in ("auto", "original", *ICONS),
+            "layout": lambda v: v in LAYOUTS,
+            "graphic_cache": lambda v: isinstance(v, int) and 100000000 <= v <= 4000000000,
+            "dictation_language": lambda v: v == "auto" or v in DICTATION_LANGUAGES,
+            "dictation_model": lambda v: re.fullmatch(r"[\w.\-/]{1,80}", v) is not None,
+            "dictation_device": lambda v: v in ("auto", "cpu", "cuda"),
+            "dictation_yoruba": lambda v: v in ("whisper", "mms"),
+            "dictation_chinese": lambda v: v in ("simplified", "traditional"),
+            "dictation_glossary": lambda v: len(v) <= 400,
+        }
+        prefs = dict(DEFAULTS)
+        for key, value in stored.items() if isinstance(stored, dict) else ():
+            if key in DEFAULTS and type(value) is type(DEFAULTS[key]) and valid.get(key, lambda v: True)(value):
+                prefs[key] = value
+        return prefs
+
+    def save_settings(self, values):
+        merged = {**self.settings(), **values}
+        os.makedirs(os.path.dirname(self._settings_path()), exist_ok=True)
+        with open(self._settings_path(), "w", encoding="utf-8") as f:
+            json.dump(merged, f, indent=2)
+        return merged
+
+    def is_applied(self):
+        return os.path.exists(self._manifest_path())
+
     def _backup_url(self):
         return self._expand("$(user)/libreappearance/backup.json")
 
     def _locale(self):
         """UI language tag as LibreOffice uses it ('fr', 'pt-BR', 'en-US'...)."""
         locale = self._get("/org.openoffice.Setup/L10N", "ooLocale") or ""
-        if not locale:  # "same as the system"
+        if not locale:  # "same as the system": LibreOffice's own reading of the OS (all platforms)
+            locale = self._get_optional("/org.openoffice.System/L10N", "UILocale") or ""
+        if not locale:
             env = (os.environ.get("LC_ALL") or os.environ.get("LC_MESSAGES")
                    or os.environ.get("LANG") or "en-US")
             locale = env.split(".")[0].replace("_", "-")
@@ -237,7 +324,9 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
         return MESSAGES[self._lang()][key]
 
     def _message(self, key, detail=""):
-        text = self._text(key) + (f"\n\n{detail}" if detail else "")
+        self._message_text(self._text(key) + (f"\n\n{detail}" if detail else ""), error=key == "error")
+
+    def _message_text(self, text, error=False):
         frame = self._create("com.sun.star.frame.Desktop").getCurrentFrame()
         if frame is None:
             print(f"Aura: {text}")
@@ -246,7 +335,7 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
         toolkit = self._create("com.sun.star.awt.Toolkit")
         box = toolkit.createMessageBox(
             window, uno.Enum("com.sun.star.awt.MessageBoxType",
-                             "ERRORBOX" if key == "error" else "INFOBOX"), 1, "Aura", text)
+                             "ERRORBOX" if error else "INFOBOX"), 1, "Aura", text)
         box.execute()
 
     # ------------------------------------------------------------ state I/O
@@ -273,9 +362,9 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
             "SymbolStyle": self._get("/org.openoffice.Office.Common/Misc", "SymbolStyle"),
             "CurrentColorScheme": self._get("/org.openoffice.Office.UI/ColorScheme", "CurrentColorScheme"),
             "ToolbarMode": {}, "Applications": {}, "Toolbars": {}, "Templates": {},
-            "Settings": {path: {name: self._get(path, name) for name in values}
-                         for path, values in SETTINGS.items()},
-            "Appearance": self._get(*APPEARANCE),
+            "Settings": {path: {name: self._get_optional(path, name) for name in names}
+                         for path, names in SETTINGS.items()},
+            "Appearance": self._get_optional(*APPEARANCE),
         }
         for service, (suffix, app, package) in MODULES.items():
             snap["ToolbarMode"][suffix] = self._get("/org.openoffice.Office.UI.ToolbarMode", "Active" + suffix)
@@ -300,9 +389,10 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
             self._set(f"/org.openoffice.Setup/Office/Factories/{service}",
                       {"ooSetupFactoryTemplateFile": url})
         for path, values in snap.get("Settings", {}).items():
-            self._set(path, values)
-        if "Appearance" in snap:
-            self._set(APPEARANCE[0], {APPEARANCE[1]: uno.Any("short", snap["Appearance"])})
+            self._set_optional(path, values)
+        if snap.get("Appearance") is not None:
+            self._set_optional(APPEARANCE[0], {APPEARANCE[1]: uno.Any("short", snap["Appearance"])})
+        self._bind_paste(False)
 
     # --------------------------------------------------------------- actions
     def _install_templates(self):
@@ -339,9 +429,25 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
         except FileNotFoundError:
             return {"created": [], "replaced": {}}
 
+    @staticmethod
+    def _is_aura_file(path):
+        """A shared file another Aura profile placed (theme or launcher): update it in place."""
+        try:
+            if os.path.isdir(path):
+                with open(os.path.join(path, "gtk-3.0", "gtk.css"), encoding="utf-8") as f:
+                    return "Generated by tools/build_gtk.py" in f.read(200)
+            if path.endswith(".desktop"):
+                with open(path, encoding="utf-8") as f:
+                    return "GTK_THEME=Aura" in f.read()
+        except OSError:
+            pass
+        return False
+
     def _place(self, manifest, dst, write):
         """Write dst through write(path), recording it so restore can undo it."""
         known = dst in manifest["created"] or dst in manifest["replaced"]
+        if not known and self._is_aura_file(dst):
+            known = True   # owned by another Aura profile's manifest: never claim or back it up
         if not known:
             if os.path.lexists(dst):
                 keep = os.path.join(os.path.dirname(self._manifest_path()), "replaced",
@@ -356,7 +462,7 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
             shutil.rmtree(dst)
         write(dst)
 
-    def _install_files(self, spec):
+    def _install_files(self, spec, prefs):
         pip = self.ctx.getByName("/singletons/com.sun.star.deployment.PackageInformationProvider")
         root = self._system(pip.getPackageLocation(EXTENSION_ID))
         manifest = self._load_manifest()
@@ -367,16 +473,70 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
 
         if sys.platform.startswith("linux"):
             data_home = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
-            for name in ("Aura", "Aura-dark"):
-                src = os.path.join(root, "gtk", name)
-                self._place(manifest, os.path.join(data_home, "themes", name),
-                            lambda d, s=src: shutil.copytree(s, d))
-            for launcher in LAUNCHERS:
-                self._place_launcher(manifest, data_home, f"libreoffice-{launcher}.desktop", spec["gtk"])
+            themes = [os.path.join(data_home, "themes", n) for n in ("Aura", "Aura-dark")]
+            launchers = [os.path.join(data_home, "applications", f"libreoffice-{n}.desktop")
+                         for n in LAUNCHERS]
+            if prefs["gtk"]:
+                for name, dst in zip(("Aura", "Aura-dark"), themes):
+                    src = os.path.join(root, "gtk", name)
+                    self._place(manifest, dst, lambda d, s=src: shutil.copytree(s, d))
+                for launcher in LAUNCHERS:
+                    self._place_launcher(manifest, data_home, f"libreoffice-{launcher}.desktop", spec["gtk"])
+            else:
+                self._unplace(manifest, themes + launchers)
 
         os.makedirs(os.path.dirname(self._manifest_path()), exist_ok=True)
         with open(self._manifest_path(), "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2)
+
+    # ------------------------------------------------------------- versions
+    def version(self):
+        pip = self.ctx.getByName("/singletons/com.sun.star.deployment.PackageInformationProvider")
+        root = self._system(pip.getPackageLocation(EXTENSION_ID))
+        with open(os.path.join(root, "description.xml"), encoding="utf-8") as f:
+            return re.search(r'<version value="([^"]+)"', f.read()).group(1)
+
+    def office_version(self):
+        return self._get_optional("/org.openoffice.Setup/Product", "ooSetupVersionAboutBox") or "?"
+
+    def dispatch(self, command):
+        frame = self._create("com.sun.star.frame.Desktop").getCurrentFrame()
+        if frame is not None:
+            self._create("com.sun.star.frame.DispatchHelper").executeDispatch(frame, command, "", 0, ())
+
+    def _ensure_icons(self, root):
+        """Rebuild the Aura icon themes from the installed Colibre after a LibreOffice update,
+        so new commands get Aura icons too. Silently skipped when not writable (shared install)."""
+        folder = os.path.join(root, "iconsets")
+        marker = os.path.join(folder, "built-for.txt")
+        office = self.office_version()
+        try:
+            with open(marker, encoding="utf-8") as f:
+                if f.read().strip() == office:
+                    return
+        except OSError:
+            pass
+        try:
+            import aura_icons
+            with open(os.path.join(root, "design", "tokens.json"), encoding="utf-8") as f:
+                tokens = json.load(f)
+            config = self._brand("$BRAND_SHARE_SUBDIR/config")
+            aura_icons.build_all(tokens, config, folder)
+            with open(marker, "w", encoding="utf-8") as f:
+                f.write(office)
+        except Exception as e:
+            print(f"Aura: icon themes kept as shipped ({e})")
+
+    def uninstall(self):
+        """Restore the original look, remove the extension, restart."""
+        self.restore(silent=True)
+        self.save_settings({"welcomed": True})
+        import aura_dictation
+        aura_dictation.bind_shortcut(self, False)
+        aura_dictation.remove(self)
+        manager = self.ctx.getByName("/singletons/com.sun.star.deployment.ExtensionManager")
+        manager.removeExtension(EXTENSION_ID, "", "user", None, None)
+        self.ctx.getByName("/singletons/com.sun.star.task.OfficeRestartManager").requestRestart(None)
 
     # ------------------------------------------------------------- ribbons
     def _command_label(self, module_id, command):
@@ -501,11 +661,9 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
                 groups.append((self._group_title(node, names), items))
         groups.sort(key=lambda g: g[0].lower())
         manage = [(c, self._command_label(module_id, c)) for c in MANAGE_COMMANDS]
-        aura = [(AURA_URL + "paste_table", self._text("paste_table"))] if module != "scalc" else []
-        aura += [(AURA_URL + "apply_light", self._text("light")),
-                (AURA_URL + "apply_dark", self._text("dark")),
-                (AURA_URL + "refresh", self._text("refresh")),
-                (AURA_URL + "restore", self._text("restore"))]
+        aura = [(AURA_URL + "dictation", self._text("dictation")), (AURA_URL + "panel", self._text("panel"))]
+        if module != "scalc":
+            aura.append((AURA_URL + "paste_table", self._text("paste_table")))
         return manage, groups, aura
 
     def _ribbon_budget(self):
@@ -522,33 +680,58 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
         tabs = {m: self._extension_tab(m) for m in RIBBON_MODULES}
         with open(os.path.join(root, "description.xml"), encoding="utf-8") as f:
             version = re.search(r'<version value="([^"]+)"', f.read()).group(1)
-        return {"locale": self._locale(), "version": version, "tabs": tabs}
+        return {"locale": self._locale(), "version": version, "office": self.office_version(),
+                "tabs": tabs,
+                "extensions_tab": self.settings()["extensions_tab"]}
+
+    def _brand(self, path):
+        """A path inside the LibreOffice installation, on every platform (macOS bundles too)."""
+        expander = self.ctx.getByName("/singletons/com.sun.star.util.theMacroExpander")
+        return self._system(expander.expandMacros("$BRAND_BASE_DIR/" + path))
 
     def _write_ribbons(self, manifest, root, user, state=None):
+        """Customise the *installed* LibreOffice's stock ribbons (any version >= 24.2).
+
+        A module whose stock ribbon cannot be customised safely keeps it untouched.
+        """
         state = state or self._ribbon_state(root)
         budget = manifest.get("budget") or self._ribbon_budget()
         manifest["budget"] = budget
-        with open(os.path.join(root, "ui", "overrides.json"), encoding="utf-8") as f:
-            overrides = json.load(f)
-        resources = self._system(self._expand("$(prog)/resource"))
+        with open(os.path.join(root, "ui", "ribbon.json"), encoding="utf-8") as f:
+            spec = json.load(f)["modules"]
+        resources = self._brand("$BRAND_SHARE_RESOURCE_SUBDIR")
         lang = state["locale"].split("-")[0].lower()
+        skipped = []
         for module in RIBBON_MODULES:
-            src = os.path.join(root, "ui", module, "ui", "notebookbar_compact.ui")
-            tree = aura_ribbon.ET.parse(src)
-            ribbon = tree.getroot()
-            aura_ribbon.localize(ribbon, module, state["locale"], resources,
-                                 overrides.get(module, {}).get(lang, {}))
-            manage, groups, aura = state["tabs"][module]
-            aura_ribbon.extensions_page(ribbon, list(groups) + [("Aura", aura)],
-                                        self._text("manage"), manage, budget=budget)
             dst = os.path.join(user, "config", "soffice.cfg", "modules", module, "ui",
                                "notebookbar_compact.ui")
+            try:
+                stock = self._brand(f"$BRAND_SHARE_SUBDIR/config/soffice.cfg/modules/{module}/ui/"
+                                    "notebookbar_compact.ui")
+                tree = aura_ribbon.ET.parse(stock)
+                ribbon = tree.getroot()
+                aura_ribbon.customize(ribbon, spec.get(module, {}))
+                aura_ribbon.localize(ribbon, module, state["locale"], resources,
+                                     spec.get(module, {}).get("labels", {}).get(lang, {}))
+            except Exception as e:   # unknown layout: keep LibreOffice's own ribbon
+                print(f"Aura: {module} ribbon left as shipped by LibreOffice ({e})")
+                self._unplace(manifest, [dst])
+                skipped.append(module)
+                continue
+            if state.get("extensions_tab", True):
+                manage, groups, aura = state["tabs"][module]
+                try:
+                    aura_ribbon.extensions_page(ribbon, list(groups) + [("Aura", aura)],
+                                                self._text("manage"), manage, budget=budget)
+                except Exception as e:
+                    print(f"Aura: {module} Extensions tab left as shipped ({e})")
             self._place(manifest, dst,
                         lambda d, t=tree: t.write(d, encoding="UTF-8", xml_declaration=True))
         manifest["ribbon_state"] = json.loads(json.dumps(state))
+        manifest["ribbon_skipped"] = skipped
 
-    def refresh(self, silent=False):
-        """Regenerate the ribbons if the language or the extensions changed."""
+    def refresh(self, silent=False, force=False):
+        """Regenerate the ribbons if the language, the extensions or LibreOffice changed."""
         if not os.path.exists(self._manifest_path()):
             if not silent:
                 self._message("notapplied")
@@ -557,7 +740,8 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
         root = self._system(pip.getPackageLocation(EXTENSION_ID))
         manifest = self._load_manifest()
         state = self._ribbon_state(root)
-        if silent and manifest.get("ribbon_state") == json.loads(json.dumps(state)):
+        self._ensure_icons(root)
+        if silent and not force and manifest.get("ribbon_state") == json.loads(json.dumps(state)):
             return False
         if not silent:
             manifest["budget"] = self._ribbon_budget()
@@ -587,7 +771,7 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
             data = contents.getTransferData(embed)
             data = bytes(data.value) if hasattr(data, "value") else bytes(data)
             desktop = self._create("com.sun.star.frame.Desktop")
-            doc = aura_table.load_calc_from_bytes(desktop, data, _props)
+            doc = aura_table.load_calc_from_bytes(desktop, data, _props, self.ctx)
             if doc is None:
                 return None
             try:
@@ -605,6 +789,19 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
                 return aura_table.table_from_html(text)
         return None
 
+    def _bind_paste(self, smart):
+        """Ctrl+V in Writer: Aura's table-aware paste, or LibreOffice's own paste."""
+        try:
+            supplier = self._create("com.sun.star.ui.ModuleUIConfigurationManagerSupplier")
+            shortcuts = supplier.getUIConfigurationManager(self.TEXT_DOC).getShortCutManager()
+            key = uno.createUnoStruct("com.sun.star.awt.KeyEvent")
+            key.KeyCode = 512 + 21          # com.sun.star.awt.Key.V
+            key.Modifiers = 2               # KeyModifier.MOD1: Ctrl, Cmd on macOS
+            shortcuts.setKeyEvent(key, AURA_URL + "smart_paste" if smart else ".uno:Paste")
+            shortcuts.store()
+        except Exception as e:
+            print(f"Aura: Ctrl+V binding unchanged ({e})")
+
     def _normal_paste(self, frame):
         self._create("com.sun.star.frame.DispatchHelper").executeDispatch(frame, ".uno:Paste", "", 0, ())
 
@@ -618,6 +815,8 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
         frame = self._create("com.sun.star.frame.Desktop").getCurrentFrame()
         if frame is None:
             return
+        if smart and not self.settings()["smart_paste"]:
+            return self._normal_paste(frame)
         doc = frame.getController().getModel()
         module = self._create("com.sun.star.frame.ModuleManager").identify(frame)
         if module == self.TEXT_DOC:
@@ -694,6 +893,51 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
                     winreg.SetValueEx(k, value, 0, winreg.REG_SZ, os.path.join(target, name))
                     manifest.setdefault("registry", []).append(value)
 
+    def _allowed(self, path):
+        """Aura only ever deletes or moves the files it creates, at known places.
+
+        files.json could be edited by anyone with access to the profile: a path
+        outside these places is ignored, so Restore can never be turned against
+        the user's files.
+        """
+        real = os.path.realpath(path)
+        name = os.path.basename(real)
+        user = os.path.realpath(self._system(self._expand("$(user)")))
+        data_home = os.path.realpath(os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share"))
+
+        def under(root, *parts):
+            return os.path.dirname(real) == os.path.realpath(os.path.join(root, *parts))
+
+        if name == "notebookbar_compact.ui":
+            return any(under(user, "config", "soffice.cfg", "modules", m, "ui") for m in RIBBON_MODULES)
+        if name in ("Aura", "Aura-dark"):
+            return under(data_home, "themes")
+        if re.fullmatch(r"libreoffice-[a-z]+\.desktop", name):
+            return under(data_home, "applications")
+        if re.fullmatch(r"Inter(Display)?-[A-Za-z]+\.otf|LICENSE-Inter\.txt", name):
+            return (under(data_home, "fonts", "Aura") or under(os.path.expanduser("~"), "Library", "Fonts")
+                    or under(os.environ.get("LOCALAPPDATA", "/nonexistent"), "Microsoft", "Windows", "Fonts"))
+        return re.fullmatch(r"\d+", name) is not None and under(user, "libreappearance", "replaced")
+
+    def _unplace(self, manifest, paths):
+        """Undo _place for some paths only (an option switched off)."""
+        for path in paths:
+            if not self._allowed(path):
+                continue
+            if path in manifest["created"]:
+                manifest["created"].remove(path)
+                keep = None
+            elif path in manifest["replaced"]:
+                keep = manifest["replaced"].pop(path)
+            else:
+                continue
+            if os.path.isdir(path) and not os.path.islink(path):
+                shutil.rmtree(path, ignore_errors=True)
+            elif os.path.lexists(path):
+                os.remove(path)
+            if keep and self._allowed(keep) and os.path.lexists(keep):
+                shutil.move(keep, path)
+
     def _remove_files(self):
         manifest = self._load_manifest()
         if manifest.get("registry") and sys.platform.startswith("win"):
@@ -705,18 +949,7 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
                         winreg.DeleteValue(k, value)
                     except OSError:
                         pass
-        for path in manifest["created"]:
-            if os.path.isdir(path) and not os.path.islink(path):
-                shutil.rmtree(path, ignore_errors=True)
-            elif os.path.lexists(path):
-                os.remove(path)
-        for path, keep in manifest["replaced"].items():
-            if os.path.isdir(path) and not os.path.islink(path):
-                shutil.rmtree(path, ignore_errors=True)
-            elif os.path.lexists(path):
-                os.remove(path)
-            if os.path.lexists(keep):
-                shutil.move(keep, path)
+        self._unplace(manifest, list(manifest.get("created", [])) + list(manifest.get("replaced", {})))
         if os.path.exists(self._manifest_path()):
             os.remove(self._manifest_path())
 
@@ -727,39 +960,11 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
         helper = self._create("com.sun.star.frame.DispatchHelper")
         helper.executeDispatch(frame, ".uno:ToolbarMode", "", 0, _props(Mode=mode))
 
-    def apply(self, variant):
-        sfa = self._create("com.sun.star.ucb.SimpleFileAccess")
-        backup = self._backup_url()
-        if not sfa.exists(backup):   # keep the very first snapshot: it is the user's original look
-            data = json.dumps(self._snapshot(), indent=2).encode("utf-8")
-            pipe = self._create("com.sun.star.io.Pipe")
-            pipe.writeBytes(uno.ByteSequence(data))
-            pipe.closeOutput()
-            sfa.writeFile(backup, pipe)
-
-        self._switch_current_frame(UI_MODE)
-        spec = VARIANTS[variant]
-        self._set("/org.openoffice.Office.Common/Misc", {"SymbolStyle": spec["icons"]})
-        self._set("/org.openoffice.Office.UI/ColorScheme", {"CurrentColorScheme": spec["scheme"]})
-        for service, (suffix, app, package) in MODULES.items():
-            self._set("/org.openoffice.Office.UI.ToolbarMode", {"Active" + suffix: UI_MODE})
-            self._set(f"/org.openoffice.Office.UI.ToolbarMode/Applications/{app}", {"Active": UI_MODE})
-            self._set_toolbar_states(package, {k: False for k in self._toolbar_states(package)})
-        for service, url in self._install_templates().items():
-            self._set(f"/org.openoffice.Setup/Office/Factories/{service}",
-                      {"ooSetupFactoryTemplateFile": url})
-        for path, values in SETTINGS.items():
-            self._set(path, values)
-        self._set(APPEARANCE[0], {APPEARANCE[1]: uno.Any("short", spec["appearance"])})
-        self._install_files(spec)
-        self._message("applied")
-
-    def restore(self):
+    def _read_backup(self):
         sfa = self._create("com.sun.star.ucb.SimpleFileAccess")
         backup = self._backup_url()
         if not sfa.exists(backup):
-            self._message("nobackup")
-            return
+            return None
         stream = sfa.openFileRead(backup)
         chunks = []
         while True:
@@ -768,8 +973,60 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
                 break
             chunks.append(bytes(data.value))
         stream.closeInput()
-        snap = json.loads(b"".join(chunks).decode("utf-8"))
+        return json.loads(b"".join(chunks).decode("utf-8"))
 
+    def apply(self, variant=None, silent=False):
+        """Apply Aura with the user's preferences (variant: 'light' | 'dark' overrides the theme)."""
+        sfa = self._create("com.sun.star.ucb.SimpleFileAccess")
+        backup = self._backup_url()
+        if not sfa.exists(backup):   # keep the very first snapshot: it is the user's original look
+            data = json.dumps(self._snapshot(), indent=2).encode("utf-8")
+            pipe = self._create("com.sun.star.io.Pipe")
+            pipe.writeBytes(uno.ByteSequence(data))
+            pipe.closeOutput()
+            sfa.writeFile(backup, pipe)
+        snap = self._read_backup()
+        prefs = self.save_settings({"theme": variant} if variant else {})
+        spec = VARIANTS[prefs["theme"]]
+        layout = prefs["layout"] if prefs["layout"] in LAYOUTS else UI_MODE
+
+        self._switch_current_frame(layout)
+        icons = {"auto": spec["icons"], "original": snap["SymbolStyle"]}.get(prefs["icons"]) \
+            or ICONS.get(prefs["icons"], spec["icons"])
+        self._set("/org.openoffice.Office.Common/Misc", {"SymbolStyle": icons})
+        self._set("/org.openoffice.Office.UI/ColorScheme", {"CurrentColorScheme": spec["scheme"]})
+        tabbed = layout.endswith(".ui")
+        for service, (suffix, app, package) in MODULES.items():
+            if tabbed:
+                self._set("/org.openoffice.Office.UI.ToolbarMode", {"Active" + suffix: layout})
+            self._set(f"/org.openoffice.Office.UI.ToolbarMode/Applications/{app}", {"Active": layout})
+            if tabbed:   # the ribbon replaces the toolbars
+                self._set_toolbar_states(package, {k: False for k in self._toolbar_states(package)})
+            else:        # classic layouts keep the user's own toolbars
+                self._set_toolbar_states(package, snap["Toolbars"].get(package, {}))
+        if prefs["templates"]:
+            for service, url in self._install_templates().items():
+                self._set(f"/org.openoffice.Setup/Office/Factories/{service}",
+                          {"ooSetupFactoryTemplateFile": url})
+        else:
+            for service, url in snap["Templates"].items():
+                self._set(f"/org.openoffice.Setup/Office/Factories/{service}",
+                          {"ooSetupFactoryTemplateFile": url})
+        self._set_optional("/org.openoffice.Office.Common/Misc", {"ShowTipOfTheDay": bool(prefs["tips"])})
+        self._set_optional("/org.openoffice.Office.Common/Cache/GraphicManager",
+                           {"GraphicMemoryLimit": int(prefs["graphic_cache"])})
+        self._set_optional(APPEARANCE[0], {APPEARANCE[1]: uno.Any("short", spec["appearance"])})
+        self._bind_paste(prefs["smart_paste"])
+        self._install_files(spec, prefs)
+        if not silent:
+            self._offer_restart("applied")
+
+    def restore(self, silent=False):
+        snap = self._read_backup()
+        if snap is None:
+            if not silent:
+                self._message("nobackup")
+            return False
         frame = self._create("com.sun.star.frame.Desktop").getCurrentFrame()
         if frame is not None:
             module = self._create("com.sun.star.frame.ModuleManager").identify(frame)
@@ -777,34 +1034,100 @@ class Aura(unohelper.Base, XJobExecutor, XJob):
                 self._switch_current_frame(snap["Applications"].get(MODULES[module][1], "Default"))
         self._restore_snapshot(snap)
         self._remove_files()
-        sfa.kill(backup)
-        self._message("restored")
+        self._create("com.sun.star.ucb.SimpleFileAccess").kill(self._backup_url())
+        if not silent:
+            self._offer_restart("restored")
+        return True
+
+    def _confirm(self, key):
+        """Yes/No question; commands can be dispatched by any document, so destructive ones ask."""
+        return self._confirm_text(self._text(key))
+
+    def _confirm_text(self, text):
+        frame = self._create("com.sun.star.frame.Desktop").getCurrentFrame()
+        if frame is None:
+            return True   # no UI (automation, tests)
+        box = self._create("com.sun.star.awt.Toolkit").createMessageBox(
+            frame.getContainerWindow(), uno.Enum("com.sun.star.awt.MessageBoxType", "QUERYBOX"),
+            3, "Aura", text)
+        return box.execute() == 2
+
+    # ------------------------------------------------------------- restart
+    def _offer_restart(self, key):
+        """Tell what happened and offer to restart LibreOffice right away."""
+        text = self._text(key) + "\n\n" + self._text("restart_now")
+        frame = self._create("com.sun.star.frame.Desktop").getCurrentFrame()
+        if frame is None:
+            print(f"Aura: {text}")
+            return
+        box = self._create("com.sun.star.awt.Toolkit").createMessageBox(
+            frame.getContainerWindow(), uno.Enum("com.sun.star.awt.MessageBoxType", "QUERYBOX"),
+            3, "Aura", text)   # 3 = BUTTONS_YES_NO
+        if box.execute() == 2:   # YES
+            self.restart()
+
+    def restart(self):
+        """Restart LibreOffice. On Linux the new instance gets the Aura GTK theme."""
+        prefs = self.settings()
+        if sys.platform.startswith("linux") and self.is_applied() and prefs["gtk"]:
+            import subprocess
+            theme = VARIANTS[prefs["theme"]]["gtk"]
+            program = os.path.join(self._system(self._expand("$(prog)")), "soffice")
+            # wait (at most 2 minutes) for this instance to quit, then start a themed one;
+            # values travel as arguments ($1..$3), never inside the script text
+            script = ('i=0; while kill -0 "$1" 2>/dev/null && [ $i -lt 400 ]; do sleep 0.3; i=$((i+1)); done; '
+                      'kill -0 "$1" 2>/dev/null || exec env GTK_THEME="$2" "$3"')
+            subprocess.Popen(["sh", "-c", script, "aura-restart", str(os.getpid()), theme, program],
+                             start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            self._create("com.sun.star.frame.Desktop").terminate()
+        else:
+            self.ctx.getByName("/singletons/com.sun.star.task.OfficeRestartManager").requestRestart(None)
 
     # ----------------------------------------------------------- XJobExecutor
     def trigger(self, arg):
         try:
-            if arg == "apply_light":
+            if arg == "panel":
+                import aura_panel
+                aura_panel.show(self)
+            elif arg == "apply_light":
                 self.apply("light")
             elif arg == "apply_dark":
                 self.apply("dark")
             elif arg == "restore":
-                self.restore()
+                if self._confirm("confirm_restore"):
+                    self.restore()
             elif arg == "refresh":
                 self.refresh()
             elif arg == "paste_table":
                 self.paste_table()
             elif arg == "smart_paste":
                 self.paste_table(smart=True)
+            elif arg == "dictation":
+                import aura_dictation
+                aura_dictation.toggle(self)
         except Exception as e:  # never let an error take the office down
             self._message("error", detail=str(e))
 
     # ------------------------------------------------------------------ XJob
     def execute(self, args):
-        """Start-up job: keep the ribbons in step with the UI language and extensions."""
+        """Jobs: at start-up keep the ribbons in step with the UI language and extensions;
+        on the first visible window, welcome a user who has not applied Aura yet."""
+        event = ""
+        for arg in args:
+            if arg.Name == "Environment":
+                event = next((v.Value for v in arg.Value if v.Name == "EventName"), "")
         try:
-            self.refresh(silent=True)
+            if event == "onFirstVisibleTask":
+                if not self.is_applied() and not self.settings()["welcomed"]:
+                    self.save_settings({"welcomed": True})
+                    import aura_panel
+                    aura_panel.welcome(self)
+            else:
+                self.refresh(silent=True)
+                import aura_dictation
+                aura_dictation.bind_shortcut(self, self.settings()["dictation_shortcut"])
         except Exception as e:
-            print(f"Aura: ribbon refresh failed: {e}")
+            print(f"Aura: start-up job failed: {e}")
         return ()
 
 

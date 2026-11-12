@@ -34,7 +34,6 @@ MODULES = {
     "simpress": ("simpress", "com.sun.star.presentation.PresentationDocument"),
     "sdraw": ("sdraw", "com.sun.star.drawing.DrawingDocument"),
 }
-STOCK = Path("/usr/lib/libreoffice/share/config/soffice.cfg/modules")
 
 
 def ribbon_commands(path):
@@ -63,11 +62,11 @@ def main():
         profile = Path(tempfile.mkdtemp(prefix="aura-cmds-"))
         os.environ["XDG_DATA_HOME"] = str(profile / "xdg-data")   # never touch the real one
         oxt = sorted(glob.glob(str(Path(__file__).resolve().parent.parent / "dist" / "Aura-*.oxt")))[-1]
-        subprocess.run(["unopkg", "add", "--suppress-license",
+        subprocess.run([bt.find_unopkg(), "add", "--suppress-license",
                         f"-env:UserInstallation={profile.as_uri()}", oxt], check=True)
     else:
         profile = Path(sys.argv[1])
-    office = bt.Office(shutil.which("soffice"), profile)
+    office = bt.Office(bt.find_office(), profile)
     office.profile = None  # removed below only when we created it
     if throwaway:
         office.ctx.ServiceManager.createInstanceWithContext(
@@ -75,12 +74,15 @@ def main():
     smgr = office.ctx.ServiceManager
     transformer = smgr.createInstanceWithContext("com.sun.star.util.URLTransformer", office.ctx)
     descriptions = office.ctx.getByName("/singletons/com.sun.star.frame.theUICommandDescription")
+    expander = office.ctx.getByName("/singletons/com.sun.star.util.theMacroExpander")
+    stock_dir = Path(uno.fileUrlToSystemPath(expander.expandMacros(
+        "$BRAND_BASE_DIR/$BRAND_SHARE_SUBDIR/config/soffice.cfg/modules")))
     failures = 0
     try:
         for module, (factory, service) in MODULES.items():
             ribbon = profile / "user/config/soffice.cfg/modules" / module / "ui/notebookbar_compact.ui"
             commands = sorted(ribbon_commands(ribbon))
-            stock = ribbon_commands(STOCK / module / "ui/notebookbar_compact.ui")
+            stock = ribbon_commands(stock_dir / module / "ui/notebookbar_compact.ui")
             doc = office.new(factory)
             frame = doc.getCurrentController().getFrame()
             generic = descriptions.getByName(service)
